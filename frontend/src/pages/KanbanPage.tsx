@@ -9,15 +9,16 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import { taskService } from '../services/taskService';
 import { categoryService } from '../services/categoryService';
-import type { Task, TaskStatus, Category } from '../types';
+import { TaskStatus } from '../types';
+import type { Task, Category } from '../types';
 import KanbanColumn from '../components/KanbanColumn';
 import TaskCard from '../components/TaskCard';
 import TaskForm from '../components/TaskForm';
 
 const columns: { status: TaskStatus; title: string; color: string }[] = [
-  { status: 'TODO', title: 'To Do', color: '#6b7280' },
-  { status: 'IN_PROGRESS', title: 'In Progress', color: '#f59e0b' },
-  { status: 'DONE', title: 'Done', color: '#10b981' },
+  { status: TaskStatus.TODO, title: 'To Do', color: '#6b7280' },
+  { status: TaskStatus.IN_PROGRESS, title: 'In Progress', color: '#f59e0b' },
+  { status: TaskStatus.DONE, title: 'Done', color: '#10b981' },
 ];
 
 export default function KanbanPage() {

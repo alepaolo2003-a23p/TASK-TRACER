@@ -1,5 +1,6 @@
 import { useState, type FormEvent, useEffect } from 'react';
-import type { Task, TaskRequest, Category, TaskStatus, Priority } from '../types';
+import { TaskStatus, Priority } from '../types';
+import type { Task, TaskRequest, Category } from '../types';
 import { taskService } from '../services/taskService';
 
 interface Props {
@@ -12,8 +13,8 @@ interface Props {
 export default function TaskForm({ task, categories, onSave, onCancel }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<TaskStatus>('TODO');
-  const [priority, setPriority] = useState<Priority>('MEDIUM');
+  const [status, setStatus] = useState<TaskStatus>(TaskStatus.TODO);
+  const [priority, setPriority] = useState<Priority>(Priority.MEDIUM);
   const [dueDate, setDueDate] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [recurring, setRecurring] = useState(false);
