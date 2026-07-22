@@ -1,50 +1,33 @@
-@REM ----------------------------------------------------------------------------
-@REM Licensed to the Apache Software Foundation (ASF) under one
-@REM or more contributor license agreements.  See the NOTICE file
-@REM distributed with this work for additional information
-@REM regarding copyright ownership.  The ASF licenses this file
-@REM to you under the Apache License, Version 2.0 (the
-@REM "License"); you may not use this file except in compliance
-@REM with the License.  You may obtain a copy of the License at
-@REM
-@REM    https://www.apache.org/licenses/LICENSE-2.0
-@REM
-@REM Unless required by applicable law or agreed to in writing,
-@REM software distributed under the License is distributed on an
-@REM "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-@REM KIND, either express or implied.  See the License for the
-@REM specific language governing permissions and limitations
-@REM under the License.
-@REM ----------------------------------------------------------------------------
+@echo off
+setlocal
 
-@REM Set local scope
-@IF NOT "%MAVEN_SKIP_RC%"=="" GOTO skipRcPre
-@SETLOCAL
-:skipRcPre
+set "MVN_VERSION=3.9.8"
+set "MVN_CACHE_DIR=%LOCALAPPDATA%\maven"
+set "MVN_HOME=%MVN_CACHE_DIR%\apache-maven-%MVN_VERSION%"
 
-@REM Set MAVEN_HOME
-@IF NOT "%MAVEN_HOME%"=="" GOTO setMavenHome
-@SET MAVEN_HOME=%USERPROFILE%\.m2
-:setMavenHome
+if exist "%MVN_HOME%\bin\mvn.cmd" goto :run_mvn
 
-@REM Find java.exe
-@IF NOT DEFINED JAVA_HOME GOTO findJavaFromJavaHome
-@SET JAVA_CMD=%JAVA_HOME%\bin\java.exe
-@IF EXIST "%JAVA_CMD%" GOTO chkMHome
-:findJavaFromJavaHome
-@SET JAVA_CMD=java.exe
-@WHERE "%JAVA_CMD%" 2>nul
-@IF ERRORLEVEL 1 GOTO errorNoJava
-:chkMHome
+echo Maven %MVN_VERSION% no encontrado. Descargando...
+if not exist "%MVN_CACHE_DIR%" mkdir "%MVN_CACHE_DIR%"
 
-@SET JAR_PATH=%~dp0.mvn\wrapper\maven-wrapper.jar
-@SET MAVEN_OPTS=%MAVEN_OPTS%
-@IF NOT "%MAVEN_SKIP_RC%"=="" GOTO skipRc
+set "MVN_URL=https://archive.apache.org/dist/maven/maven-3/%MVN_VERSION%/binaries/apache-maven-%MVN_VERSION%-bin.zip"
+set "ZIP_FILE=%TEMP%\maven-%MVN_VERSION%.zip"
 
-@REM Execute Maven Wrapper
-"%JAVA_CMD%" %MAVEN_OPTS% -jar "%JAR_PATH%" %*
+powershell -Command "try { Invoke-WebRequest -Uri '%MVN_URL%' -OutFile '%ZIP_FILE%' -UseBasicParsing } catch { exit 1 }"
+if errorlevel 1 (
+    echo ERROR: No se pudo descargar Maven. Verifica tu conexion a internet.
+    exit /b 1
+)
 
-:skipRc
-@IF NOT "%MAVEN_SKIP_RC%"=="" GOTO end
-@ENDLOCAL
-:end
+powershell -Command "Expand-Archive -Path '%ZIP_FILE%' -DestinationPath '%MVN_CACHE_DIR%' -Force"
+del "%ZIP_FILE%"
+
+if not exist "%MVN_HOME%\bin\mvn.cmd" (
+    echo ERROR: No se pudo extraer Maven correctamente.
+    exit /b 1
+)
+
+echo Maven %MVN_VERSION% descargado en %MVN_HOME%
+
+:run_mvn
+"%MVN_HOME%\bin\mvn.cmd" %*

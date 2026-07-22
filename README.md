@@ -1,50 +1,42 @@
 # Task Tracker
 
-A personal task management web application built as a full-stack portfolio project. Features a Kanban board with drag & drop, task filtering, categories with color labels, JWT authentication, and full Docker containerization.
+A personal task management web application built as a full-stack portfolio project. Features a Kanban board with drag & drop, task filtering, categories with color labels, and JWT authentication — running locally or deployed to the cloud (Railway + Vercel).
 
 ## Tech Stack
 
-| Layer      | Technology                                           |
-| ---------- | ---------------------------------------------------- |
-| Backend    | Java 21, Spring Boot 3.3, Spring Security + JWT      |
-| Frontend   | React 18, TypeScript, Vite, Tailwind CSS             |
-| Database   | PostgreSQL 16                                        |
-| ORM        | Spring Data JPA (Hibernate)                          |
-| API Docs   | Swagger/OpenAPI (springdoc-openapi)                  |
-| Drag & Drop| @dnd-kit/core                                        |
-| Auth       | JWT (jjwt library)                                   |
-| Containers | Docker, Docker Compose                                |
+| Layer      | Technology                                                          |
+| ---------- | ------------------------------------------------------------------- |
+| Backend    | Java 21, Spring Boot 3.3, Spring Security + JWT                     |
+| Frontend   | React 18, TypeScript, Vite, Tailwind CSS                            |
+| Database   | PostgreSQL 16                                                        |
+| ORM        | Spring Data JPA (Hibernate)                                         |
+| API Docs   | Swagger/OpenAPI (springdoc-openapi)                                 |
+| Drag & Drop| @dnd-kit/core                                                       |
+| Auth       | JWT (jjwt library)                                                  |
+| Deploy     | Railway (backend + DB) + Vercel (frontend)                          |
 
 ## Architecture
 
+### Local development
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
 │   Frontend   │────▶│   Backend    │────▶│  PostgreSQL  │
-│  React + Vite│     │ Spring Boot  │     │   Database   │
-│   :5173/80   │     │    :8080     │     │    :5432     │
-└──────────────┘     └──────────────┘     └──────────────┘
-       │                    │
-       └────── Docker Compose ──────┘
+│  React + Vite│  ▲  │ Spring Boot  │     │   localhost   │
+│   :5173      │  │  │    :8080     │     │    :5432     │
+└──────────────┘  │  └──────────────┘     └──────────────┘
+                  │
+          proxy de Vite
+         (vite.config.ts)
 ```
 
-The application follows a **monorepo** structure with two main directories:
-
-- **`/backend`** — Spring Boot application following a layered architecture:
-  - `controller/` — REST endpoints
-  - `service/` — Business logic
-  - `repository/` — JPA data access
-  - `model/entity/` — JPA entities
-  - `dto/` — Request/Response objects
-  - `security/` — JWT authentication filters and config
-  - `exception/` — Global exception handling
-  - `config/` — CORS, Swagger/OpenAPI configuration
-
-- **`/frontend`** — React + TypeScript application with:
-  - Kanban board with drag & drop (`@dnd-kit/core`)
-  - Dashboard with filters and search
-  - Category management with color picker
-  - Dark mode support
-  - Responsive design with Tailwind CSS
+### Production (Railway + Vercel)
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   Vercel     │────▶│   Railway    │────▶│  Railway     │
+│   Frontend   │     │   Backend    │     │  PostgreSQL  │
+│   SPA React  │     │ Spring Boot  │     │  Administrado│
+└──────────────┘     └──────────────┘     └──────────────┘
+```
 
 ## Features
 
@@ -64,74 +56,141 @@ The application follows a **monorepo** structure with two main directories:
 - [ ] Statistics dashboard with charts
 - [ ] Browser notifications
 
-## Screenshots
+---
 
-*(Add screenshots here — placeholder for when you have the app running)*
+## Requisitos previos (Windows)
 
-| Dashboard | Kanban Board | Categories |
-|-----------|-------------|------------|
-| ![Dashboard](screenshots/dashboard.png) | ![Kanban](screenshots/kanban.png) | ![Categories](screenshots/categories.png) |
-| Login | Dark Mode | |
-| ![Login](screenshots/login.png) | ![Dark Mode](screenshots/darkmode.png) | |
+### 1. Instalar JDK 21
 
-## Quick Start with Docker
+1. Descarga **Eclipse Temurin JDK 21** (MSI installer) desde:  
+   https://adoptium.net/temurin/releases/?version=21
+2. Ejecuta el instalador, todo por defecto.
+3. Verifica en una terminal nueva:
+   ```powershell
+   java -version
+   # → openjdk version "21.0.x"
+   ```
 
-**Prerequisites:** Docker and Docker Compose installed on your machine.
+### 2. Instalar Node.js 18+
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/your-username/task-tracker.git
-cd task-tracker
+1. Descarga desde: https://nodejs.org/ (versión LTS recomendada, 18 o superior)
+2. Ejecuta el instalador, todo por defecto.
+3. Verifica:
+   ```powershell
+   node --version  # → v18.x o superior
+   npm --version   # → 10.x o superior
+   ```
 
-# 2. Start all services (builds images, creates containers)
-docker-compose up --build
+### 3. Instalar PostgreSQL 16
 
-# Wait for services to be ready, then open:
-# Frontend: http://localhost:5173
-# Backend API: http://localhost:8080
-# Swagger UI: http://localhost:8080/swagger-ui.html
+1. Descarga el instalador oficial desde:  
+   https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+2. Selecciona **PostgreSQL 16** para Windows x64.
+3. Durante la instalación:
+   - **Password**: pon `postgres` (para coincidir con la configuración por defecto). Si pones otra, luego ajústalo en `application-local.yml`.
+   - **Port**: 5432 (por defecto)
+   - Deja marcado "Stack Builder" al final (no es necesario, puedes omitirlo).
+4. Al terminar, PostgreSQL se instala como servicio de Windows y arranca automáticamente.
+5. Verifica (busca el servicio o usa PowerShell como admin):
+   ```powershell
+   psql -U postgres -c "SELECT version();"
+   ```
+   (Te pedirá la contraseña que pusiste en la instalación)
+
+### 4. Crear la base de datos
+
+Abre PowerShell y ejecuta:
+
+```powershell
+psql -U postgres -c "CREATE DATABASE tasktracker;"
 ```
 
-### What happens when you run `docker-compose up --build`
+(O créala desde pgAdmin si prefieres interfaz gráfica — se instala junto con PostgreSQL)
 
-1. Docker builds the **backend** image using the multi-stage `Dockerfile` in `/backend`
-2. Docker builds the **frontend** image using the multi-stage `Dockerfile` in `/frontend`
-3. Docker pulls the **PostgreSQL 16** image from Docker Hub
-4. Docker Compose creates a network so all three containers can communicate
-5. PostgreSQL initializes with credentials from `.env`
-6. Backend waits for PostgreSQL to be healthy, then starts
-7. Frontend (served via Nginx) becomes available on port 5173
+---
 
-### Running without Docker (development)
+## Ejecución local
 
-```bash
-# Backend
+### Opción A: Un solo clic (recomendado)
+
+Ejecuta el script de arranque desde la raíz del proyecto:
+
+```powershell
+.\start.bat
+```
+
+Esto abre dos ventanas:
+- **Backend** (puerto 8080) — compila y arranca Spring Boot
+- **Frontend** (puerto 5173) — arranca Vite dev server
+
+Luego abre `http://localhost:5173`.
+
+### Opción B: Dos terminales manuales
+
+**Terminal 1 — Backend:**
+```powershell
 cd backend
-./mvnw spring-boot:run
+.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local
+```
 
-# Frontend (in another terminal)
+**Terminal 2 — Frontend:**
+```powershell
 cd frontend
-npm install
+npm install    # solo la primera vez
 npm run dev
 ```
 
-*Requires a local PostgreSQL instance running on port 5432.*
+### Opción C: Un solo comando con `concurrently`
 
-## Environment Variables
+Si prefieres no abrir dos ventanas, puedes instalar `concurrently` y usar un solo comando:
 
-All configuration is done through `.env` at the project root:
+1. Crea un archivo `package.json` en la raíz del proyecto:
+   ```json
+   {
+     "name": "task-tracker",
+     "private": true,
+     "scripts": {
+       "dev": "concurrently -n BE,FE -c blue,green \"cd backend && mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local\" \"cd frontend && npm run dev\""
+     },
+     "devDependencies": {
+       "concurrently": "^8.2.0"
+     }
+   }
+   ```
+2. Instala y ejecuta:
+   ```powershell
+   npm install
+   npm run dev
+   ```
 
-| Variable            | Default    | Description                        |
-| ------------------- | ---------- | ---------------------------------- |
-| `DB_HOST`           | `db`       | PostgreSQL host (service name in Docker) |
-| `DB_PORT`           | `5432`     | PostgreSQL port                    |
-| `DB_NAME`           | `tasktracker` | Database name                   |
-| `DB_USERNAME`       | `postgres` | Database user                     |
-| `DB_PASSWORD`       | `postgres` | Database password                 |
-| `JWT_SECRET`        | *(long)*   | Secret key for JWT signing         |
-| `JWT_EXPIRATION_MS` | `86400000` | JWT token validity (24h)          |
+**¿Cuál conviene más?**
+- **`start.bat`** es más simple, no requiere instalar nada adicional, y cada servicio corre en su propia ventana con sus logs visibles. Es la opción recomendada para Windows.
+- **`concurrently`** unifica los logs en una sola terminal y funciona en cualquier SO, pero requiere un `package.json` raíz. Es mejor si planeas compartir el proyecto con usuarios de Mac/Linux.
 
-## API Endpoints
+### Variables de entorno local
+
+El backend lee la conexión a PostgreSQL de estas variables de entorno:
+
+| Variable      | Default     | Description              |
+|---------------|-------------|--------------------------|
+| `PGHOST`      | `localhost` | Host de PostgreSQL       |
+| `PGPORT`      | `5432`      | Puerto                   |
+| `PGDATABASE`  | `tasktracker` | Nombre de base de datos |
+| `PGUSER`      | `postgres`  | Usuario                  |
+| `PGPASSWORD`  | `postgres`  | Contraseña               |
+| `JWT_SECRET`  | *(default)* | Clave secreta JWT        |
+
+Si usas `-Dspring-boot.run.profiles=local`, Spring Boot carga `application-local.yml` donde puedes sobreescribir cualquiera de estas. Ese archivo **no se sube a Git** (está en `.gitignore`).
+
+---
+
+## Uso de la API
+
+Accede a Swagger UI para probar los endpoints desde el navegador:
+
+```
+http://localhost:8080/swagger-ui.html
+```
 
 ### Authentication (`/api/auth`)
 | Method | Path       | Description       |
@@ -149,11 +208,7 @@ All configuration is done through `.env` at the project root:
 | PATCH  | `/{id}/status`  | Update task status          |
 | DELETE | `/{id}`         | Delete task                 |
 
-**Query parameters for GET `/api/tasks`:**
-- `status` — `TODO`, `IN_PROGRESS`, `DONE`
-- `priority` — `LOW`, `MEDIUM`, `HIGH`
-- `categoryId` — UUID of category
-- `search` — Full-text search in title/description
+**Query parameters:** `status`, `priority`, `categoryId`, `search`
 
 ### Categories (`/api/categories`)
 | Method | Path     | Description           |
@@ -163,30 +218,108 @@ All configuration is done through `.env` at the project root:
 | PUT    | `/{id}`  | Update category       |
 | DELETE | `/{id}`  | Delete category       |
 
+---
+
+## Despliegue en producción
+
+La aplicación se despliega en dos plataformas:
+- **Railway** — aloja el backend (Spring Boot) y la base de datos PostgreSQL
+- **Vercel** — aloja el frontend (React SPA)
+
+### Arquitectura de producción
+
+```
+https://tufrontend.vercel.app          ← Vercel (frontend)
+         │
+         │  peticiones a /api/*
+         ▼
+https://tubackend.railway.app          ← Railway (backend)
+         │
+         │  conexión JDBC
+         ▼
+PostgreSQL administrado por Railway    ← Railway (base de datos)
+```
+
+### Paso 1: Railway (backend + base de datos)
+
+1. Crea una cuenta en https://railway.app (GitHub login)
+2. Crea un **New Project** → **Deploy from GitHub repo**
+3. Selecciona tu repositorio de Task Tracker
+4. Railway detecta automáticamente el `pom.xml` y configura el build de Maven
+5. Ve a la pestaña **Variables** y agrega:
+   - `JWT_SECRET` — una clave secreta larga y aleatoria (ej. generada con: `openssl rand -base64 32`)
+   - `CORS_ORIGINS` — la URL de tu frontend en Vercel (ej. `https://task-tracker.vercel.app`)
+6. Railway provee PostgreSQL automáticamente. Ve a **New** → **Database** → **Add PostgreSQL**. Railway inyecta automáticamente las variables `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD` en el backend.
+7. Railway despliega automáticamente en cada push a la rama principal.
+8. Obtén la URL pública del backend desde el panel de Railway (dominio `*.railway.app` o dominio personalizado).
+
+**Nota sobre la base de datos:** Railway crea una base de datos PostgreSQL administrada con backup automático. Las variables de entorno se inyectan sin necesidad de configurar nada adicional — `application.yml` ya lee `PGHOST`, `PGPORT`, etc.
+
+### Paso 2: Vercel (frontend)
+
+1. Crea una cuenta en https://vercel.com (GitHub login)
+2. Haz clic en **Add New** → **Project**
+3. Importa tu repositorio de GitHub
+4. Configura el proyecto:
+   - **Framework Preset:** Vite
+   - **Root Directory:** `frontend/`
+   - **Build Command:** `npm run build` (por defecto)
+   - **Output Directory:** `dist` (por defecto)
+5. En **Environment Variables**, agrega:
+   - `VITE_API_URL` — la URL pública del backend en Railway (ej. `https://tubackend.up.railway.app`)
+6. Haz clic en **Deploy**
+7. Vercel despliega automáticamente en cada push a la rama principal.
+8. Obtén la URL pública (por defecto `tu-proyecto.vercel.app`).
+
+**Importante:** Las variables de entorno se configuran desde el panel de cada plataforma, NO en archivos. No subas a Git archivos `.env` con credenciales reales.
+
+### Paso 3: Actualizar CORS en Railway
+
+Ve a las variables de entorno del backend en Railway y asegúrate de tener:
+
+```
+CORS_ORIGINS=https://tu-frontend.vercel.app
+```
+
+Esto permite que el frontend de Vercel haga peticiones al backend de Railway.
+
+### Links de la app desplegada
+
+- **Frontend:** https://task-tracker.vercel.app (pendiente de crear)
+- **Backend:** https://task-tracker-api.railway.app (pendiente de crear)
+- **Swagger:** https://task-tracker-api.railway.app/swagger-ui.html
+
+---
+
 ## Technical Decisions
 
-### Why Spring Boot instead of Express/FastAPI?
-Spring Boot provides a robust, production-ready framework with built-in security (Spring Security), ORM (Spring Data JPA), and validation. It's widely used in enterprise Java, making it a strong portfolio choice.
+### Why Spring Boot?
+Spring Boot provides a robust, production-ready framework with built-in security (Spring Security), ORM (Spring Data JPA), and validation. It's widely used in enterprise Java.
 
-### Why PostgreSQL instead of SQLite?
-PostgreSQL is a full-featured relational database that handles concurrent access properly, has excellent JSON support, and is the standard choice for production Spring Boot applications.
+### Why PostgreSQL over H2 for local?
+PostgreSQL is the same database used in production (Railway). Using it locally ensures no surprises between environments. H2 was used initially when Docker wasn't available and PostgreSQL couldn't be installed.
 
-### Why multi-stage Docker builds?
-The backend Dockerfile uses two stages: one with Maven+JDK to compile, and a second with only JRE to run. This reduces the final image from ~400MB to ~180MB by excluding build tools.
+### Why Railway + Vercel instead of a single provider?
+Railway is excellent for backend services (Spring Boot + PostgreSQL) but Vercel is optimized for static frontend deployments with automatic CDN, preview URLs per branch, and simpler configuration for SPAs.
 
-### Why Nginx for the frontend instead of Vite dev server?
-In production, Nginx is more efficient at serving static files, handles compression, and can act as a reverse proxy to the backend — eliminating CORS issues entirely.
+### Why Maven Wrapper (`mvnw.cmd` / `mvnw`)?
+The wrapper downloads the correct Maven version automatically if not installed. This ensures consistent builds across environments (local, Railway CI).
 
-### Why not Vercel?
-Vercel is designed for serverless functions (Node.js, Python, Go) and cannot run a JVM-based Spring Boot application with a persistent database connection.
+### Why @dnd-kit instead of react-beautiful-dnd?
+`react-beautiful-dnd` is no longer maintained. `@dnd-kit` is the modern, maintained alternative with better TypeScript support.
 
 ## What I Learned
 
-- **Docker fundamentals**: images vs containers, layers, multi-stage builds, volumes for persistence, health checks, and Docker Compose networking
-- **Spring Boot layered architecture**: controllers, services, repositories, DTOs, and why separation of concerns matters
-- **JWT authentication flow**: how tokens are generated, validated, and passed via Authorization headers
-- **React + DnD Kit**: implementing drag & drop with `@dnd-kit/core` and `@dnd-kit/sortable` for Kanban columns
-- **CORS and reverse proxies**: why configuring CORS in Spring Boot (dev) vs Nginx reverse proxy (production) are two valid approaches
+- **Spring Boot layered architecture**: controllers, services, repositories, DTOs
+- **JWT authentication flow**: token generation, validation, and security filters
+- **React + DnD Kit**: implementing drag & drop Kanban
+- **Spring Data JPA**: derived query methods, `@Query`, entity relationships
+- **Bean Validation**: `@Valid`, `@NotBlank`, `@Pattern` for request validation
+- **Global exception handling**: `@ControllerAdvice`
+- **Environment-specific configuration**: Spring profiles for local vs production
+- **CORS configuration**: allowing multiple origins (local + production)
+- **Railway deployment**: Spring Boot + PostgreSQL in the cloud
+- **Vercel deployment**: React SPA with environment variables
 
 ## License
 
