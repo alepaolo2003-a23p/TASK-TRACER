@@ -18,8 +18,11 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+        String baseUrl = apiBaseUrl.startsWith("http://") || apiBaseUrl.startsWith("https://")
+                ? apiBaseUrl
+                : "https://" + apiBaseUrl;
         return new OpenAPI()
-                .addServersItem(new Server().url(apiBaseUrl))
+                .addServersItem(new Server().url(baseUrl))
                 .info(new Info()
                         .title("Task Tracker API")
                         .version("1.0")
