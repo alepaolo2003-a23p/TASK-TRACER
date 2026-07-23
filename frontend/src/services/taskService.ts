@@ -28,9 +28,7 @@ export const taskService = {
   },
 
   async updateStatus(id: string, status: TaskStatus): Promise<Task> {
-    const res = await api.patch<Task>(`/tasks/${id}/status`, status, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const res = await api.patch<Task>(`/tasks/${id}/status`, { status });
     return res.data;
   },
 

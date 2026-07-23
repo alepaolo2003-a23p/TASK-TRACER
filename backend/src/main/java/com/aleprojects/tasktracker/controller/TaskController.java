@@ -1,5 +1,6 @@
 package com.aleprojects.tasktracker.controller;
 
+import com.aleprojects.tasktracker.dto.StatusRequest;
 import com.aleprojects.tasktracker.dto.TaskRequest;
 import com.aleprojects.tasktracker.dto.TaskResponse;
 import com.aleprojects.tasktracker.model.enums.Priority;
@@ -62,9 +63,9 @@ public class TaskController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<TaskResponse> updateStatus(Authentication auth, @PathVariable UUID id,
-                                                     @RequestBody String newStatus) {
+                                                      @RequestBody StatusRequest request) {
         UUID userId = (UUID) auth.getPrincipal();
-        return ResponseEntity.ok(taskService.updateTaskStatus(userId, id, TaskStatus.valueOf(newStatus.trim())));
+        return ResponseEntity.ok(taskService.updateTaskStatus(userId, id, request.getStatus()));
     }
 
     @DeleteMapping("/{id}")
