@@ -41,12 +41,12 @@ export default function CategoriesPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-[#F2F2F5] mb-6">Categories</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-[#F2F2F5] mb-6">Categorías</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-6">
         <input
           type="text"
-          placeholder="Category name"
+          placeholder="Nombre de la categoría"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -59,12 +59,12 @@ export default function CategoriesPage() {
           className="w-12 h-10 rounded-lg cursor-pointer border dark:border-gray-700"
         />
         <button type="submit" className="btn-primary min-h-[44px]">
-          {editingId ? 'Update' : 'Add'}
+          {editingId ? 'Actualizar' : 'Añadir'}
         </button>
         {editingId && (
           <button type="button" onClick={() => { setName(''); setColor('#7C5CFC'); setEditingId(null); }}
             className="btn-ghost min-h-[44px]">
-            Cancel
+            Cancelar
           </button>
         )}
       </form>
@@ -78,14 +78,14 @@ export default function CategoriesPage() {
             </div>
             <div className="flex gap-3">
               <button onClick={() => handleEdit(cat)}
-                className="text-xs font-medium text-[#7C5CFC] hover:text-[#6a4de6]">Edit</button>
+                className="text-xs font-medium text-[#7C5CFC] hover:text-[#6a4de6]">Editar</button>
               <button onClick={() => handleDelete(cat.id)}
-                className="text-xs font-medium text-[#FF6B6B] hover:text-[#e05555]">Delete</button>
+                className="text-xs font-medium text-[#FF6B6B] hover:text-[#e05555]">Eliminar</button>
             </div>
           </div>
         ))}
         {categories.length === 0 && (
-          <p className="text-sm text-[#9494A0] text-center py-8">No categories yet. Create one above.</p>
+          <p className="text-sm text-[#9494A0] text-center py-8">Aún no hay categorías. Crea una arriba.</p>
         )}
       </div>
     </div>

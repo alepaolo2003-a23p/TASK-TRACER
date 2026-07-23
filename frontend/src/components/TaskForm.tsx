@@ -10,6 +10,18 @@ interface Props {
   onCancel: () => void;
 }
 
+const statusLabels: Record<string, string> = {
+  TODO: 'Por hacer',
+  IN_PROGRESS: 'En progreso',
+  DONE: 'Completado',
+};
+
+const priorityLabels: Record<string, string> = {
+  LOW: 'Baja',
+  MEDIUM: 'Media',
+  HIGH: 'Alta',
+};
+
 export default function TaskForm({ task, categories, onSave, onCancel }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -62,40 +74,40 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="label">Title *</label>
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="input" />
+        <label className="label">Título *</label>
+        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="input" placeholder="Título de la tarea" />
       </div>
       <div>
-        <label className="label">Description</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="input" />
+        <label className="label">Descripción</label>
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="input" placeholder="Descripción opcional" />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="label">Status</label>
+          <label className="label">Estado</label>
           <select value={status} onChange={(e) => setStatus(e.target.value as TaskStatus)} className="input">
-            <option value="TODO">To Do</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="DONE">Done</option>
+            <option value="TODO">{statusLabels.TODO}</option>
+            <option value="IN_PROGRESS">{statusLabels.IN_PROGRESS}</option>
+            <option value="DONE">{statusLabels.DONE}</option>
           </select>
         </div>
         <div>
-          <label className="label">Priority</label>
+          <label className="label">Prioridad</label>
           <select value={priority} onChange={(e) => setPriority(e.target.value as Priority)} className="input">
-            <option value="LOW">Low</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="HIGH">High</option>
+            <option value="LOW">{priorityLabels.LOW}</option>
+            <option value="MEDIUM">{priorityLabels.MEDIUM}</option>
+            <option value="HIGH">{priorityLabels.HIGH}</option>
           </select>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="label">Due Date</label>
+          <label className="label">Fecha límite</label>
           <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="input" />
         </div>
         <div>
-          <label className="label">Category</label>
+          <label className="label">Categoría</label>
           <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="input">
-            <option value="">None</option>
+            <option value="">Sin categoría</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -106,24 +118,24 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={recurring} onChange={(e) => setRecurring(e.target.checked)}
             className="rounded accent-[#7C5CFC]" />
-          <span className="text-sm text-gray-700 dark:text-[#9494A0]">Recurring</span>
+          <span className="text-sm text-gray-700 dark:text-[#9494A0]">Recurrente</span>
         </label>
         {recurring && (
           <select value={recurrenceRule} onChange={(e) => setRecurrenceRule(e.target.value)}
             className="input flex-1">
-            <option value="">Select rule</option>
-            <option value="DAILY">Daily</option>
-            <option value="WEEKLY">Weekly</option>
-            <option value="MONTHLY">Monthly</option>
+            <option value="">Selecciona regla</option>
+            <option value="DAILY">Diario</option>
+            <option value="WEEKLY">Semanal</option>
+            <option value="MONTHLY">Mensual</option>
           </select>
         )}
       </div>
       <div className="flex gap-3 justify-end pt-2">
         <button type="button" onClick={onCancel} className="btn-ghost">
-          Cancel
+          Cancelar
         </button>
         <button type="submit" disabled={loading} className="btn-primary">
-          {loading ? 'Saving...' : task ? 'Update' : 'Create'}
+          {loading ? 'Guardando...' : task ? 'Actualizar' : 'Crear'}
         </button>
       </div>
     </form>

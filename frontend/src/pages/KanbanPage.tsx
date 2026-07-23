@@ -19,10 +19,16 @@ import KanbanColumn from '../components/KanbanColumn';
 import TaskCard from '../components/TaskCard';
 import TaskForm from '../components/TaskForm';
 
+const statusLabels: Record<string, string> = {
+  TODO: 'Por hacer',
+  IN_PROGRESS: 'En progreso',
+  DONE: 'Completado',
+};
+
 const columns: { status: TaskStatus; title: string; color: string }[] = [
-  { status: TaskStatus.TODO, title: 'To Do', color: '#6b7280' },
-  { status: TaskStatus.IN_PROGRESS, title: 'In Progress', color: '#7C5CFC' },
-  { status: TaskStatus.DONE, title: 'Done', color: '#3DD9C4' },
+  { status: TaskStatus.TODO, title: statusLabels.TODO, color: '#6b7280' },
+  { status: TaskStatus.IN_PROGRESS, title: statusLabels.IN_PROGRESS, color: '#7C5CFC' },
+  { status: TaskStatus.DONE, title: statusLabels.DONE, color: '#3DD9C4' },
 ];
 
 export default function KanbanPage() {
@@ -99,16 +105,16 @@ export default function KanbanPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-[#F2F2F5]">Kanban Board</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-[#F2F2F5]">Tablero Kanban</h1>
         <button onClick={() => { setEditingTask(null); setShowForm(true); }} className="btn-primary">
-          + New Task
+          + Nueva tarea
         </button>
       </div>
 
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="card p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold mb-4 dark:text-[#F2F2F5]">{editingTask ? 'Edit Task' : 'New Task'}</h2>
+            <h2 className="text-lg font-bold mb-4 dark:text-[#F2F2F5]">{editingTask ? 'Editar tarea' : 'Nueva tarea'}</h2>
             <TaskForm task={editingTask} categories={categories} onSave={handleSave} onCancel={() => { setShowForm(false); setEditingTask(null); }} />
           </div>
         </div>

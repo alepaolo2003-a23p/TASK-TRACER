@@ -16,7 +16,7 @@ export default function LoginPage() {
     try {
       await login(username, password);
     } catch {
-      setError('Invalid credentials');
+      setError('Credenciales inválidas');
     } finally {
       setLoading(false);
     }
@@ -27,25 +27,25 @@ export default function LoginPage() {
       <div className="w-full max-w-md card p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-[#7C5CFC] tracking-tight">Stride</h1>
-          <p className="text-sm text-gray-500 dark:text-[#9494A0] mt-1">Sign in to your account</p>
+          <p className="text-sm text-gray-500 dark:text-[#9494A0] mt-1">Inicia sesión en tu cuenta</p>
         </div>
         {error && <p className="text-[#FF6B6B] text-sm mb-4 text-center">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="label">Username</label>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required className="input" />
+            <label className="label">Usuario</label>
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required className="input" placeholder="Tu nombre de usuario" />
           </div>
           <div>
-            <label className="label">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="input" />
+            <label className="label">Contraseña</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="input" placeholder="Tu contraseña" />
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full min-h-[44px]">
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
         </form>
         <p className="text-sm text-center mt-6 text-gray-500 dark:text-[#9494A0]">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-[#7C5CFC] hover:underline font-medium">Register</Link>
+          ¿No tienes cuenta?{' '}
+          <Link to="/register" className="text-[#7C5CFC] hover:underline font-medium">Registrarse</Link>
         </p>
       </div>
     </div>

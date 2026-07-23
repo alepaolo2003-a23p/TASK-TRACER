@@ -11,9 +11,15 @@ const statusColors: Record<string, string> = {
 };
 
 const statusLabels: Record<string, string> = {
-  TODO: 'To Do',
-  IN_PROGRESS: 'In Progress',
-  DONE: 'Done',
+  TODO: 'Por hacer',
+  IN_PROGRESS: 'En progreso',
+  DONE: 'Completado',
+};
+
+const priorityLabels: Record<string, string> = {
+  HIGH: 'ALTA',
+  MEDIUM: 'MEDIA',
+  LOW: 'BAJA',
 };
 
 export default function DashboardPage() {
@@ -70,34 +76,34 @@ export default function DashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-[#F2F2F5]">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-[#F2F2F5]">Tablero</h1>
         <button onClick={() => { setEditingTask(null); setShowForm(true); }} className="btn-primary">
-          + New Task
+          + Nueva tarea
         </button>
       </div>
 
       <div className="flex flex-wrap gap-3 mb-6">
         <input
           type="text"
-          placeholder="Search tasks..."
+          placeholder="Buscar tareas..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="input flex-1 min-w-[200px]"
         />
         <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as TaskStatus | '')} className="input w-auto">
-          <option value="">All status</option>
-          <option value="TODO">To Do</option>
-          <option value="IN_PROGRESS">In Progress</option>
-          <option value="DONE">Done</option>
+          <option value="">Todos los estados</option>
+          <option value="TODO">Por hacer</option>
+          <option value="IN_PROGRESS">En progreso</option>
+          <option value="DONE">Completado</option>
         </select>
         <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value as Priority | '')} className="input w-auto">
-          <option value="">All priority</option>
-          <option value="HIGH">High</option>
-          <option value="MEDIUM">Medium</option>
-          <option value="LOW">Low</option>
+          <option value="">Todas las prioridades</option>
+          <option value="HIGH">Alta</option>
+          <option value="MEDIUM">Media</option>
+          <option value="LOW">Baja</option>
         </select>
         <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="input w-auto">
-          <option value="">All categories</option>
+          <option value="">Todas las categorías</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
@@ -107,7 +113,7 @@ export default function DashboardPage() {
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="card p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold mb-4 dark:text-[#F2F2F5]">{editingTask ? 'Edit Task' : 'New Task'}</h2>
+            <h2 className="text-lg font-bold mb-4 dark:text-[#F2F2F5]">{editingTask ? 'Editar tarea' : 'Nueva tarea'}</h2>
             <TaskForm task={editingTask} categories={categories} onSave={handleSave} onCancel={() => { setShowForm(false); setEditingTask(null); }} />
           </div>
         </div>
@@ -134,7 +140,7 @@ export default function DashboardPage() {
                       task.priority === 'HIGH' ? 'bg-[#FF6B6B]/10 text-[#FF6B6B]' :
                       task.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
                       'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    }`}>{task.priority}</span>
+                    }`}>{priorityLabels[task.priority]}</span>
                   </div>
                   {task.description && <p className="text-xs text-gray-500 dark:text-[#9494A0] mt-1.5">{task.description}</p>}
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
@@ -145,7 +151,7 @@ export default function DashboardPage() {
                     )}
                     {task.dueDate && (
                       <span className={`text-xs ${new Date(task.dueDate) < new Date() ? 'text-[#FF6B6B] font-bold' : 'text-gray-400 dark:text-[#9494A0]'}`}>
-                        {new Date(task.dueDate).toLocaleDateString()}
+                        {new Date(task.dueDate) < new Date() ? 'Vencida' : new Date(task.dueDate).toLocaleDateString()}
                       </span>
                     )}
                   </div>
@@ -155,19 +161,19 @@ export default function DashboardPage() {
                       onChange={(e) => handleStatusChange(task, e.target.value as TaskStatus)}
                       className="text-xs border rounded-lg px-2 py-1.5 bg-white dark:bg-[#1A1A22] dark:text-[#F2F2F5] dark:border-gray-600 min-h-[36px]"
                     >
-                      <option value="TODO">To Do</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="DONE">Done</option>
+                      <option value="TODO">Por hacer</option>
+                      <option value="IN_PROGRESS">En progreso</option>
+                      <option value="DONE">Completado</option>
                     </select>
                     <button onClick={() => { setEditingTask(task); setShowForm(true); }}
-                      className="text-xs font-medium text-[#7C5CFC] hover:text-[#6a4de6]">Edit</button>
+                      className="text-xs font-medium text-[#7C5CFC] hover:text-[#6a4de6]">Editar</button>
                     <button onClick={() => handleDelete(task.id)}
-                      className="text-xs font-medium text-[#FF6B6B] hover:text-[#e05555]">Delete</button>
+                      className="text-xs font-medium text-[#FF6B6B] hover:text-[#e05555]">Eliminar</button>
                   </div>
                 </div>
               ))}
               {taskList.length === 0 && (
-                <p className="text-xs text-[#9494A0] text-center py-4">No tasks</p>
+                <p className="text-xs text-[#9494A0] text-center py-4">Sin tareas</p>
               )}
             </div>
           </div>

@@ -1,181 +1,181 @@
 <div align="center">
-  <h1>📋 Task Tracker</h1>
-  <p><strong>Full-stack task management application with Kanban board, JWT authentication, and cloud deployment</strong></p>
+  <h1>⚡ Stride</h1>
+  <p><strong>Aplicación full-stack de gestión de tareas con tablero Kanban, autenticación JWT y despliegue en la nube</strong></p>
 
   <p>
     <img src="https://img.shields.io/badge/Java-21-%23ED8B00?logo=openjdk&logoColor=white" alt="Java 21">
     <img src="https://img.shields.io/badge/Spring_Boot-3.3-%236DB33F?logo=springboot&logoColor=white" alt="Spring Boot 3.3">
     <img src="https://img.shields.io/badge/React-18-%2361DAFB?logo=react&logoColor=white" alt="React 18">
     <img src="https://img.shields.io/badge/PostgreSQL-16-%234169E1?logo=postgresql&logoColor=white" alt="PostgreSQL 16">
-    <img src="https://img.shields.io/badge/Railway-deployed-%230B0D0E?logo=railway" alt="Railway">
-    <img src="https://img.shields.io/badge/Vercel-deployed-%23000000?logo=vercel" alt="Vercel">
+    <img src="https://img.shields.io/badge/Railway-deploy-%230B0D0E?logo=railway" alt="Railway">
+    <img src="https://img.shields.io/badge/Vercel-deploy-%23000000?logo=vercel" alt="Vercel">
   </p>
 </div>
 
 ---
 
-## 📑 Table of Contents
+## 📑 Tabla de contenido
 
-- [Overview](#-overview)
-- [Tech Stack](#-tech-stack)
-- [Architecture](#-architecture)
-- [Features](#-features)
-- [Local Setup](#-local-setup)
-- [Usage](#-usage)
-- [API Documentation](#-api-documentation)
-- [Deployment](#-deployment)
-- [Technical Decisions](#-technical-decisions)
-- [What I Learned](#-what-i-learned)
-- [License](#-license)
-
----
-
-## 📌 Overview
-
-**Task Tracker** is a personal task management web application built as a full-stack portfolio project. It allows users to create, organize, and track tasks through a visual Kanban board with drag & drop, color-coded categories, priority levels, and due date alerts.
-
-The project is designed to run both **locally** (for development) and **in the cloud** (for portfolio demonstration) using Railway for the backend + database and Vercel for the frontend.
-
-**Live demo:** [task-tracker.vercel.app](https://task-tracker.vercel.app) *(pending deployment)*
+- [Visión general](#-visión-general)
+- [Stack tecnológico](#-stack-tecnológico)
+- [Arquitectura](#-arquitectura)
+- [Funcionalidades](#-funcionalidades)
+- [Configuración local](#-configuración-local)
+- [Uso](#-uso)
+- [Documentación de la API](#-documentación-de-la-api)
+- [Despliegue](#-despliegue)
+- [Decisiones técnicas](#-decisiones-técnicas)
+- [Mejoras y cambios implementados](#-mejoras-y-cambios-implementados)
+- [Incidentes resueltos y buenas prácticas](#-incidentes-resueltos-y-buenas-prácticas)
+- [Licencia](#-licencia)
 
 ---
 
-## 🛠 Tech Stack
+## 📌 Visión general
 
-| Layer | Technology |
+**Stride** es una aplicación web personal de gestión de tareas, construida como proyecto full-stack de portafolio. Permite crear, organizar y dar seguimiento a tareas mediante un tablero Kanban visual con arrastrar y soltar, categorías con código de colores, niveles de prioridad y alertas de fecha límite.
+
+El proyecto está diseñado para ejecutarse tanto **localmente** (desarrollo) como **en la nube** (demostración) usando Railway para el backend + base de datos y Vercel para el frontend.
+
+---
+
+## 🛠 Stack tecnológico
+
+| Capa | Tecnología |
 |---|---|
 | **Backend** | Java 21, Spring Boot 3.3, Spring Security, Spring Data JPA |
 | **Frontend** | React 18, TypeScript, Vite, Tailwind CSS |
-| **Database** | PostgreSQL 16 |
-| **Authentication** | JWT (jjwt library) |
-| **API Documentation** | Swagger / OpenAPI (springdoc-openapi) |
-| **Drag & Drop** | @dnd-kit/core |
-| **Deployment** | Railway (backend + DB), Vercel (frontend) |
+| **Base de datos** | PostgreSQL 16 |
+| **Autenticación** | JWT (librería jjwt) |
+| **Documentación API** | Swagger / OpenAPI (springdoc-openapi) |
+| **Arrastrar y soltar** | @dnd-kit/core |
+| **Despliegue** | Railway (backend + DB), Vercel (frontend) |
 
 ---
 
-## 🏗 Architecture
+## 🏗 Arquitectura
 
-### Local Development
+### Desarrollo local
 
 ```
 ┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
 │   Frontend       │      │   Backend        │      │   PostgreSQL     │
 │   React + Vite   │─────▶│   Spring Boot    │─────▶│   localhost:5432 │
-│   localhost:5173 │  ▲   │   localhost:8080 │      │   tasktracker    │
+│   localhost:5173 │  ▲   │   localhost:8080 │      │   stride         │
 └──────────────────┘  │   └──────────────────┘      └──────────────────┘
                       │
               Vite Proxy (vite.config.ts)
            /api → http://localhost:8080
 ```
 
-### Production (Cloud)
+### Producción (nube)
 
 ```
 ┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
 │   Vercel         │      │   Railway        │      │   Railway        │
 │   Frontend SPA   │─────▶│   Spring Boot    │─────▶│   PostgreSQL     │
-│   .vercel.app    │  🌐  │   .railway.app   │      │   Managed        │
+│   .vercel.app    │  🌐  │   .railway.app   │      │   Gestionado     │
 └──────────────────┘      └──────────────────┘      └──────────────────┘
         │                          │
-        │  CORS config             │  Env vars injected
+        │  Config CORS             │  Variables de entorno
         │  CORS_ORIGINS=https://   │  PGHOST, PGPORT, etc.
         │  tu-frontend.vercel.app  │
 ```
 
-### Backend Structure
+### Estructura del backend
 
 ```
 backend/
 ├── src/main/java/com/aleprojects/tasktracker/
-│   ├── controller/        # REST endpoints (Auth, Task, Category)
-│   ├── service/           # Business logic layer
-│   ├── repository/        # JPA data access (Spring Data)
-│   ├── model/entity/      # JPA entities (Task, Category, User)
+│   ├── controller/        # Endpoints REST (Auth, Task, Category)
+│   ├── service/           # Capa de lógica de negocio
+│   ├── repository/        # Acceso a datos JPA (Spring Data)
+│   ├── model/entity/      # Entidades JPA (Task, Category, User)
 │   ├── model/enums/       # TaskStatus, Priority
-│   ├── dto/               # Request/Response objects
-│   ├── mapper/            # Entity ↔ DTO converters
-│   ├── security/          # JWT filters + Spring Security config
-│   ├── exception/         # Global exception handling (@ControllerAdvice)
+│   ├── dto/               # Objetos de solicitud/respuesta
+│   ├── mapper/            # Convertidores entidad ↔ DTO
+│   ├── security/          # Filtros JWT + configuración Spring Security
+│   ├── exception/         # Manejo global de excepciones (@ControllerAdvice)
 │   └── config/            # CORS, Swagger/OpenAPI
-├── system.properties      # Java version for Railway
-├── Procfile               # Start command for Railway
-├── railway.json           # Railway build configuration
+├── system.properties      # Versión de Java para Railway
+├── nixpacks.toml          # Configuración de build para Railway
+├── railway.json           # Configuración de despliegue Railway
 └── pom.xml
 ```
 
-### Frontend Structure
+### Estructura del frontend
 
 ```
 frontend/
 ├── src/
 │   ├── pages/             # Login, Register, Dashboard, Kanban, Categories
 │   ├── components/        # Navbar, TaskCard, TaskForm, KanbanColumn
-│   ├── services/          # API client (Axios), auth, tasks, categories
-│   ├── contexts/          # AuthContext, ThemeContext (dark mode)
-│   └── types/             # TypeScript interfaces and enums
-├── vercel.json            # SPA routing config for Vercel
-├── vite.config.ts         # Vite proxy to backend
+│   ├── services/          # Cliente API (Axios), auth, tasks, categories
+│   ├── contexts/          # AuthContext, ThemeContext (modo oscuro)
+│   └── types/             # Interfaces y enums de TypeScript
+├── vercel.json            # Configuración SPA para Vercel
+├── vite.config.ts         # Proxy de Vite hacia el backend
 └── package.json
 ```
 
 ---
 
-## ✨ Features
+## ✨ Funcionalidades
 
-### Core
-- ✅ Full CRUD for tasks (create, read, update, delete)
-- ✅ Kanban board with drag & drop (TODO → IN_PROGRESS → DONE)
-- ✅ Filtering by status, priority, and category
-- ✅ Full-text search across titles and descriptions
-- ✅ Due date visual alerts (overdue in red, due soon in yellow)
-- ✅ Categories with custom color picker
-- ✅ JWT authentication (register / login)
-- ✅ Swagger/OpenAPI documentation
+### Principales
+- ✅ CRUD completo de tareas (crear, leer, actualizar, eliminar)
+- ✅ Tablero Kanban con arrastrar y soltar (TODO → IN_PROGRESS → DONE)
+- ✅ Filtros por estado, prioridad y categoría
+- ✅ Búsqueda de texto completo en títulos y descripciones
+- ✅ Alertas visuales de fecha límite (vencida en rojo, por vencer en amarillo)
+- ✅ Categorías con selector de color personalizado
+- ✅ Autenticación JWT (registro / inicio de sesión)
+- ✅ Documentación Swagger/OpenAPI
+- ✅ Modo oscuro
+- ✅ Interfaz completamente en español
+- ✅ Diseño responsive con soporte táctil para dispositivos móviles
 
-### Plus
-- ✅ Dark mode toggle
-- ⬜ Recurring tasks (database model ready)
-- ⬜ Statistics dashboard with charts
-- ⬜ Browser notifications for due tasks
+### Extras
+- ⬜ Tareas recurrentes (modelo de base de datos listo)
+- ⬜ Panel de estadísticas con gráficos
+- ⬜ Notificaciones del navegador para tareas próximas a vencer
 
 ---
 
-## 💻 Local Setup
+## 💻 Configuración local
 
-### Prerequisites
+### Requisitos previos
 
-Install these tools **in this order**:
+Instala estas herramientas **en este orden**:
 
-| Tool | Version | Download |
+| Herramienta | Versión | Descarga |
 |---|---|---|
 | **JDK** | 21 (LTS) | [Eclipse Temurin JDK 21](https://adoptium.net/temurin/releases/?version=21) |
-| **PostgreSQL** | 16 or 17 | [EDB PostgreSQL Installer](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads) |
+| **PostgreSQL** | 16 o 17 | [EDB PostgreSQL Installer](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads) |
 | **Node.js** | 18+ (LTS) | [nodejs.org](https://nodejs.org/) |
 
-### Step 1: Create the database
+### Paso 1: Crear la base de datos
 
 ```powershell
-# Conéctate a PostgreSQL y crea la base de datos
-psql -U postgres -c "CREATE DATABASE tasktracker;"
+psql -U postgres -c "CREATE DATABASE stride;"
 ```
 *(Te pedirá la contraseña que pusiste al instalar PostgreSQL)*
 
-### Step 2: Configure access
+### Paso 2: Configurar el acceso
 
 Crea `backend/src/main/resources/application-local.yml` con tu contraseña:
 
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/tasktracker
+    url: jdbc:postgresql://localhost:5432/stride
     username: postgres
     password: TU_CONTRASEÑA_AQUI
 ```
 
 > **⚠️ Este archivo está en `.gitignore`** — no se subirá a GitHub.
 
-### Step 3: Start the backend
+### Paso 3: Iniciar el backend
 
 ```powershell
 cd backend
@@ -184,7 +184,7 @@ cd backend
 
 > `mvnw.cmd` descarga automáticamente Maven 3.9.8 si no lo tienes instalado.
 
-### Step 4: Start the frontend
+### Paso 4: Iniciar el frontend
 
 ```powershell
 cd frontend
@@ -192,104 +192,105 @@ npm install
 npm run dev
 ```
 
-### Step 5: Open the app
+### Paso 5: Abrir la aplicación
 
-Navigate to [http://localhost:5173](http://localhost:5173), register a new account, and start using Task Tracker.
+Navega a [http://localhost:5173](http://localhost:5173), regístrate y empieza a usar Stride.
 
-### Quick Start (single command)
+### Inicio rápido (un solo comando)
 
-Run `start.bat` from the project root — it opens both services in separate windows:
+Ejecuta `start.bat` desde la raíz del proyecto — abre ambos servicios en ventanas separadas:
 
 ```powershell
 .\start.bat
 ```
 
-### H2 Console (if using embedded database)
+### Consola H2 (si usas base de datos embebida)
 
-If you want to run without PostgreSQL (for quick testing):
+Si quieres ejecutar sin PostgreSQL (para pruebas rápidas):
 
 ```yaml
-# In application.yml, change datasource to:
+# En application.yml, cambia datasource a:
 spring:
   datasource:
-    url: jdbc:h2:mem:tasktracker
+    url: jdbc:h2:mem:stride
     username: sa
     password:
 ```
 
-Then access: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+Luego accede a: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
 
 ---
 
-## 🎮 Usage
+## 🎮 Uso
 
-### First-time flow
+### Flujo para primer uso
 
-1. Open the app → redirected to **Login**
-2. Click **"Create account"** → register with username, email, password
-3. Go to **Categories** → create categories with colors (e.g., Work, Personal, Urgent)
-4. Go to **Dashboard** or **Kanban** → create tasks
-5. Drag tasks between columns on the **Kanban** board
+1. Abre la aplicación → redirigido a **Iniciar sesión**
+2. Haz clic en **"Crear cuenta"** → regístrate con usuario, correo y contraseña
+3. Ve a **Categorías** → crea categorías con colores (ej. Trabajo, Personal, Urgente)
+4. Ve a **Tablero** o **Kanban** → crea tareas
+5. Arrastra tareas entre columnas en el tablero **Kanban**
+6. Usa los filtros para encontrar tareas rápidamente
 
-### Environment Variables
+### Variables de entorno
 
-| Variable | Default | Description |
+| Variable | Valor por defecto | Descripción |
 |---|---|---|
-| `PGHOST` | `localhost` | PostgreSQL host |
-| `PGPORT` | `5432` | PostgreSQL port |
-| `PGDATABASE` | `tasktracker` | Database name |
-| `PGUSER` | `postgres` | Database user |
-| `PGPASSWORD` | `postgres` | Database password |
-| `JWT_SECRET` | *(embedded default)* | Secret key for JWT signing |
-| `JWT_EXPIRATION_MS` | `86400000` | JWT validity (24h) |
-| `CORS_ORIGINS` | `http://localhost:5173` | Allowed CORS origins (comma-separated) |
+| `PGHOST` | `localhost` | Host de PostgreSQL |
+| `PGPORT` | `5432` | Puerto de PostgreSQL |
+| `PGDATABASE` | `stride` | Nombre de la base de datos |
+| `PGUSER` | `postgres` | Usuario de la base de datos |
+| `PGPASSWORD` | `postgres` | Contraseña de la base de datos |
+| `JWT_SECRET` | *(incluido en código)* | Clave secreta para firmar JWT |
+| `JWT_EXPIRATION_MS` | `86400000` | Vigencia del JWT (24h) |
+| `CORS_ORIGINS` | `http://localhost:5173` | Orígenes CORS permitidos (separados por coma) |
 
 ---
 
-## 📖 API Documentation
+## 📖 Documentación de la API
 
-Interactive API docs are available at [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) when the backend is running.
+La documentación interactiva de la API está disponible en [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) cuando el backend está en ejecución.
 
-### Authentication
+### Autenticación
 
-| Method | Endpoint | Description |
+| Método | Endpoint | Descripción |
 |---|---|---|
-| `POST` | `/api/auth/register` | Create a new user |
-| `POST` | `/api/auth/login` | Authenticate and get JWT token |
+| `POST` | `/api/auth/register` | Crear un nuevo usuario |
+| `POST` | `/api/auth/login` | Autenticarse y obtener token JWT |
 
-**Register:**
+**Registro:**
 ```json
 { "username": "demo", "password": "demo123", "email": "demo@test.com" }
 ```
-**Response:**
+**Respuesta:**
 ```json
 { "token": "eyJhbGci...", "userId": "uuid", "username": "demo", "email": "demo@test.com" }
 ```
 
-### Tasks
+### Tareas
 
-All task endpoints require `Authorization: Bearer <token>` header.
+Todos los endpoints de tareas requieren el encabezado `Authorization: Bearer <token>`.
 
-| Method | Endpoint | Description |
+| Método | Endpoint | Descripción |
 |---|---|---|
-| `GET` | `/api/tasks` | List all tasks (supports filtering) |
-| `GET` | `/api/tasks/{id}` | Get task by ID |
-| `POST` | `/api/tasks` | Create a new task |
-| `PUT` | `/api/tasks/{id}` | Update a task |
-| `PATCH` | `/api/tasks/{id}/status` | Update task status only |
-| `DELETE` | `/api/tasks/{id}` | Delete a task |
+| `GET` | `/api/tasks` | Listar todas las tareas (con filtros) |
+| `GET` | `/api/tasks/{id}` | Obtener tarea por ID |
+| `POST` | `/api/tasks` | Crear una nueva tarea |
+| `PUT` | `/api/tasks/{id}` | Actualizar una tarea |
+| `PATCH` | `/api/tasks/{id}/status` | Actualizar solo el estado |
+| `DELETE` | `/api/tasks/{id}` | Eliminar una tarea |
 
-**Query parameters for `GET /api/tasks`:**
+**Parámetros de consulta para `GET /api/tasks`:**
 - `status=TODO` | `IN_PROGRESS` | `DONE`
 - `priority=LOW` | `MEDIUM` | `HIGH`
 - `categoryId=<uuid>`
-- `search=<text>` (searches title and description)
+- `search=<texto>` (busca en título y descripción)
 
-**Create task:**
+**Crear tarea:**
 ```json
 {
-  "title": "Learn Spring Boot",
-  "description": "Complete the Task Tracker project",
+  "title": "Aprender Spring Boot",
+  "description": "Completar el proyecto Stride",
   "status": "TODO",
   "priority": "HIGH",
   "dueDate": "2026-08-15",
@@ -298,180 +299,193 @@ All task endpoints require `Authorization: Bearer <token>` header.
 }
 ```
 
-**Update status (body is plain text):**
-```
-IN_PROGRESS
-```
-
-### Categories
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/categories` | List all categories |
-| `POST` | `/api/categories` | Create a category |
-| `PUT` | `/api/categories/{id}` | Update a category |
-| `DELETE` | `/api/categories/{id}` | Delete a category |
-
-**Create category:**
+**Actualizar estado (body como objeto JSON):**
 ```json
-{ "name": "Work", "color": "#6366f1" }
+{ "status": "IN_PROGRESS" }
+```
+
+### Categorías
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/categories` | Listar todas las categorías |
+| `POST` | `/api/categories` | Crear una categoría |
+| `PUT` | `/api/categories/{id}` | Actualizar una categoría |
+| `DELETE` | `/api/categories/{id}` | Eliminar una categoría |
+
+**Crear categoría:**
+```json
+{ "name": "Trabajo", "color": "#6366f1" }
 ```
 
 ---
 
-## 🚀 Deployment
+## 🚀 Despliegue
 
-The application is deployed across two platforms:
+La aplicación está desplegada en dos plataformas:
 
-| Service | Platform | Purpose |
+| Servicio | Plataforma | Propósito |
 |---|---|---|
-| **Backend** | [Railway](https://railway.app) | Spring Boot API + PostgreSQL database |
-| **Frontend** | [Vercel](https://vercel.com) | React SPA static hosting |
+| **Backend** | [Railway](https://railway.app) | API Spring Boot + base de datos PostgreSQL |
+| **Frontend** | [Vercel](https://vercel.com) | Hospedaje estático de la SPA React |
 
-### Deploy Backend to Railway
+### Desplegar Backend en Railway
 
-#### 1. Create a Railway account
-- Go to [railway.app](https://railway.app) and sign up with GitHub
-- Install the Railway GitHub app when prompted
+#### 1. Crear cuenta en Railway
+- Ve a [railway.app](https://railway.app) y regístrate con GitHub
+- Instala la aplicación de Railway cuando se te solicite
 
-#### 2. Create the project
-- Click **New Project** → **Deploy from GitHub repo**
-- Select your `task-tracker` repository
-- Railway detects Maven and builds automatically
+#### 2. Crear el proyecto
+- Haz clic en **New Project** → **Deploy from GitHub repo**
+- Selecciona tu repositorio
+- Railway detecta Maven y construye automáticamente
 
-#### 3. Add PostgreSQL database
-- In the Railway dashboard, click **New** → **Database** → **Add PostgreSQL**
-- Railway automatically injects these environment variables into your backend:
+#### 3. Agregar base de datos PostgreSQL
+- En el dashboard de Railway, haz clic en **New** → **Database** → **Add PostgreSQL**
+- Railway inyecta automáticamente estas variables de entorno:
   - `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`
 
-#### 4. Configure environment variables
-In the Railway dashboard, go to your backend service → **Variables** tab and add:
+#### 4. Configurar variables de entorno
+En el dashboard de Railway, ve a tu servicio backend → pestaña **Variables** y agrega:
 
-| Variable | Value | Why |
+| Variable | Valor | Por qué |
 |---|---|---|
-| `JWT_SECRET` | Generate a long random secret | Signs JWT tokens securely |
-| `CORS_ORIGINS` | `https://tu-proyecto.vercel.app` | Allows frontend to call the API |
-| `SPRING_PROFILES_ACTIVE` | `postgres` | Activates PostgreSQL configuration |
-| `PGHOST` | *(auto-injected by Railway)* | PostgreSQL host |
-| `PGPORT` | *(auto-injected by Railway)* | PostgreSQL port |
-| `PGDATABASE` | *(auto-injected by Railway)* | Database name |
-| `PGUSER` | *(auto-injected by Railway)* | Database user |
-| `PGPASSWORD` | *(auto-injected by Railway)* | Database password |
+| `JWT_SECRET` | Genera una clave larga y aleatoria | Firma los tokens JWT de forma segura |
+| `CORS_ORIGINS` | `https://tu-proyecto.vercel.app` | Permite al frontend llamar a la API |
+| `SPRING_PROFILES_ACTIVE` | `postgres` | Activa la configuración de PostgreSQL |
+| `PGHOST` | *(inyectado por Railway)* | Host de PostgreSQL |
+| `PGPORT` | *(inyectado por Railway)* | Puerto de PostgreSQL |
+| `PGDATABASE` | *(inyectado por Railway)* | Nombre de la base de datos |
+| `PGUSER` | *(inyectado por Railway)* | Usuario de la base de datos |
+| `PGPASSWORD` | *(inyectado por Railway)* | Contraseña de la base de datos |
 
-> **Note:** Railway provides PostgreSQL through a **Plugin**, which auto-injects the `PG*` variables. You may need to check the exact variable names in the Railway dashboard after adding PostgreSQL.
+> **Nota:** Railway provee PostgreSQL mediante un **Plugin** que inyecta automáticamente las variables `PG*`. Verifica los nombres exactos en el dashboard después de agregar PostgreSQL.
 
-#### 5. Deploy
-- Railway deploys automatically on every push to the main branch
-- Your backend will be available at `https://<your-project>.railway.app`
+#### 5. Desplegar
+- Railway despliega automáticamente en cada push a la rama principal
+- Tu backend estará disponible en `https://<tu-proyecto>.railway.app`
 
-### Deploy Frontend to Vercel
+### Desplegar Frontend en Vercel
 
-#### 1. Create a Vercel account
-- Go to [vercel.com](https://vercel.com) and sign up with GitHub
+#### 1. Crear cuenta en Vercel
+- Ve a [vercel.com](https://vercel.com) y regístrate con GitHub
 
-#### 2. Import the repository
-- Click **Add New** → **Project**
-- Select your `task-tracker` repository
-- Configure the project:
+#### 2. Importar el repositorio
+- Haz clic en **Add New** → **Project**
+- Selecciona tu repositorio
+- Configura el proyecto:
 
-| Setting | Value |
+| Configuración | Valor |
 |---|---|
-| **Framework Preset** | Vite (auto-detected) |
+| **Framework Preset** | Vite (detección automática) |
 | **Root Directory** | `frontend/` |
 | **Build Command** | `npm run build` |
 | **Output Directory** | `dist` |
 
-#### 3. Configure environment variables
-In Vercel, go to your project → **Settings** → **Environment Variables** and add:
+#### 3. Configurar variables de entorno
+En Vercel, ve a tu proyecto → **Settings** → **Environment Variables** y agrega:
 
-| Variable | Value |
+| Variable | Valor |
 |---|---|
 | `VITE_API_URL` | `https://<tu-backend>.railway.app` |
 
-> **Important:** This tells the frontend where to find the backend API in production. In local development, it uses the Vite proxy instead.
+> **Importante:** Esto le indica al frontend dónde encontrar la API en producción. En desarrollo local usa el proxy de Vite.
 
-#### 4. Deploy
-- Click **Deploy**
-- Vercel builds and deploys automatically on every push to the main branch
-- Your frontend will be available at `https://<your-project>.vercel.app`
+#### 4. Desplegar
+- Haz clic en **Deploy**
+- Vercel construye y despliega automáticamente en cada push a la rama principal
+- Tu frontend estará disponible en `https://<tu-proyecto>.vercel.app`
 
-### After Deployment
+### Después del despliegue
 
-1. Update `CORS_ORIGINS` in Railway if needed
-2. Register a user through the deployed frontend
-3. Verify that all API endpoints work
-
-### Live URLs
-
-| Service | URL |
-|---|---|
-| **Frontend** | [https://task-tracker.vercel.app](https://task-tracker.vercel.app) |
-| **Backend API** | [https://task-tracker-api.railway.app](https://task-tracker-api.railway.app) |
-| **Swagger Docs** | [https://task-tracker-api.railway.app/swagger-ui.html](https://task-tracker-api.railway.app/swagger-ui.html) |
-
-> *(URLs are placeholders — update after actual deployment)*
+1. Actualiza `CORS_ORIGINS` en Railway si es necesario
+2. Regístrate a través del frontend desplegado
+3. Verifica que todos los endpoints de la API funcionen
 
 ---
 
-## 🧠 Technical Decisions
+## 🧠 Decisiones técnicas
 
-### Why Spring Boot instead of Express/FastAPI?
-Spring Boot provides enterprise-grade infrastructure out of the box: built-in security (Spring Security), ORM (Spring Data JPA), validation (Bean Validation), and API documentation (SpringDoc OpenAPI). It's widely adopted in the Java ecosystem.
+### ¿Por qué Spring Boot en lugar de Express/FastAPI?
+Spring Boot proporciona infraestructura de nivel empresarial lista para usar: seguridad integrada (Spring Security), ORM (Spring Data JPA), validación (Bean Validation) y documentación de API (SpringDoc OpenAPI). Es ampliamente adoptado en el ecosistema Java.
 
-### Why PostgreSQL?
-PostgreSQL is a production-grade relational database with excellent JSON support, concurrent access handling, and is the default choice for Spring Boot applications. It's also available as a managed service on Railway.
+### ¿Por qué PostgreSQL?
+PostgreSQL es una base de datos relacional de nivel productivo con excelente soporte JSON, manejo de acceso concurrente y es la opción predeterminada para aplicaciones Spring Boot. También está disponible como servicio gestionado en Railway.
 
-### Why Railway + Vercel instead of a single platform?
-Railway excels at deploying backend services with JVM support and managed PostgreSQL, making it ideal for Spring Boot. Vercel provides a superior developer experience for static frontend SPAs with instant preview deployments, automatic CDN, and simpler configuration.
+### ¿Por qué Railway + Vercel en lugar de una sola plataforma?
+Railway es excelente para desplegar servicios backend con soporte JVM y PostgreSQL gestionado, ideal para Spring Boot. Vercel ofrece una experiencia de desarrollo superior para SPAs frontend estáticas con despliegues de vista previa instantáneos, CDN automática y configuración más simple.
 
-### Why Maven Wrapper?
-The `mvnw.cmd` / `mvnw` scripts download the correct Maven version automatically, ensuring consistent builds across environments (local Windows, Railway Linux CI) without requiring manual Maven installation.
+### ¿Por qué Maven Wrapper?
+Los scripts `mvnw.cmd` / `mvnw` descargan la versión correcta de Maven automáticamente, asegurando builds consistentes en todos los entornos (Windows local, Railway Linux CI) sin requerir instalación manual de Maven.
 
-### Why multi-stage Docker builds were removed?
-Docker was initially planned but could not be installed on the development machine (Windows version limitation). The project runs natively instead. Docker containerization can be added later as an incremental improvement.
+### ¿Por qué se eliminaron los builds multi-etapa con Docker?
+Docker estaba planeado inicialmente pero no pudo instalarse en la máquina de desarrollo (limitación de versión de Windows). El proyecto se ejecuta de forma nativa. La contenedorización con Docker puede agregarse después como mejora incremental.
 
-### Why @dnd-kit instead of react-beautiful-dnd?
-`react-beautiful-dnd` is no longer maintained by Atlassian. `@dnd-kit` is the modern, actively maintained alternative with first-class TypeScript support, better accessibility, and a more flexible API.
-
----
-
-## 📚 What I Learned
-
-### Backend (Spring Boot)
-- **Layered architecture** — separation of concerns between controllers, services, repositories, and entities
-- **Spring Data JPA** — derived query methods, `@Query` for custom JPQL, entity relationships (`@ManyToOne`)
-- **JWT authentication** — token generation, validation filters, SecurityContext, stateless sessions
-- **Global exception handling** — `@ControllerAdvice` for centralized error responses
-- **Bean Validation** — `@Valid`, `@NotBlank`, `@Pattern` for request validation
-- **CORS configuration** — allowing multiple origins via environment variables
-- **Spring Profiles** — switching between local (H2) and production (PostgreSQL) configurations
-
-### Frontend (React + TypeScript)
-- **Vite proxy** — proxying API requests in development to avoid CORS issues
-- **Drag & drop** — implementing Kanban with `@dnd-kit/core` and `@dnd-kit/sortable`
-- **Context API** — managing global authentication state and dark mode
-- **Axios interceptors** — automatic JWT injection and 401 redirect handling
-- **Tailwind CSS** — responsive design with utility-first CSS and dark mode
-
-### DevOps & Deployment
-- **Spring profiles** for environment-specific configuration
-- **Railway deployment** — Spring Boot + PostgreSQL in the cloud
-- **Vercel deployment** — React SPA with environment variables
-- **Environment variables** — secure configuration via platform dashboards (not committed files)
+### ¿Por qué @dnd-kit en lugar de react-beautiful-dnd?
+`react-beautiful-dnd` ya no recibe mantenimiento de Atlassian. `@dnd-kit` es la alternativa moderna y activamente mantenida, con soporte de primera clase para TypeScript, mejor accesibilidad y una API más flexible.
 
 ---
 
-## 📄 License
+## 📋 Mejoras y cambios implementados
 
-This project is built for portfolio purposes. Feel free to use it as a reference for your own learning.
+### Rebranding a Stride
+- Cambio de nombre de "Task Tracker" a **Stride** con nueva identidad visual
+- Paleta de colores oscura y moderna: fondo `#0F0F14`, superficies `#1A1A22`, primario `#7C5CFC`, secundario `#3DD9C4`, alerta `#FF6B6B`
+- Tipografía Inter de Google Fonts para una apariencia limpia y profesional
+
+### Diseño responsive y soporte táctil
+- Tablero Kanban adaptable a dispositivos móviles con desplazamiento horizontal
+- Soporte de arrastrar y soltar táctil mediante PointerSensor + TouchSensor de @dnd-kit
+- Navbar responsive con menú hamburguesa en pantallas pequeñas
+- Formularios y tarjetas optimizados para interacción táctil (altura mínima de 44px en botones)
+
+### Traducción completa a español
+- Interfaz de usuario del frontend completamente traducida (formularios, botones, columnas Kanban, estados, prioridades, mensajes de error, tooltips, placeholders)
+- Mensajes de error del backend traducidos (AuthService, GlobalExceptionHandler, ResourceNotFoundException)
+- Mensajes de las capas de servicio ("Tarea" en lugar de "Task", "Categoría" en lugar de "Category")
+- README.md traducido y documentado en español
+- Etiquetas de prioridad: ALTA, MEDIA, BAJA
+- Etiquetas de estado: Por hacer, En progreso, Completado
+
+---
+
+## 🔧 Incidentes resueltos y buenas prácticas
+
+### Arranque en producción
+- El comando de arranque en producción debe usar siempre el JAR empaquetado (`java -jar target/*.jar`), nunca `mvnw spring-boot:run` — este último arrastra spring-boot-devtools y provoca reinicios del contexto de Spring que pueden dejar el esquema de base de datos en un estado inconsistente.
+- Verificar que `spring-boot-devtools` tenga scope `runtime` y `optional: true` en el pom.xml, y confirmar que no esté presente en el JAR final de producción.
+
+### Configuración de base de datos
+- Las variables de entorno de Spring Boot (ej. `SPRING_DATASOURCE_URL`) tienen prioridad sobre lo definido en `application.yml` — evitar duplicar/mezclar ambas fuentes de configuración para no generar confusión.
+- Recomendable usar `hibernate.hbm2ddl.halt_on_error: true` para que errores de DDL fallen de forma visible en el arranque, en vez de quedar como warnings silenciosos.
+- Usar `ddl-auto: update` en producción (no `create-drop`) para evitar la pérdida de datos en reinicios.
+
+### Frontend y variables de entorno
+- Las variables `VITE_*` del frontend se inyectan en tiempo de build, no en runtime — cualquier cambio requiere un redeploy completo, no solo reiniciar el servicio.
+- Toda variable de entorno que sea una URL completa debe incluir el protocolo (`https://`) explícitamente, para evitar que se interprete como ruta relativa.
+
+### CORS y seguridad
+- Configurar CORS correctamente requiere tanto permitir orígenes en la configuración como habilitar `.cors()` en Spring Security — falta cualquiera de los dos produce error 403.
+- El endpoint `/error` de Spring Boot debe estar explícitamente permitido en Spring Security para poder ver los mensajes de error reales; de lo contrario Spring Security lo intercepta y devuelve un 403 genérico.
+
+### API y comunicación
+- El endpoint `PATCH /api/tasks/{id}/status` debe recibir un objeto JSON `{ "status": "..." }`, no un string plano — el frontend y el backend deben acordar el formato del body.
+- Cualquier endpoint protegido por JWT debe probarse en Swagger usando el botón "Authorize" con el token completo, o se obtendrá 403 aunque el token sea válido.
+- Los nombres de los campos en los JSON de respuesta son un contrato de API — mantenerlos en inglés aunque la interfaz de usuario esté en español.
+
+---
+
+## 📄 Licencia
+
+Este proyecto está construido con fines de portafolio. Siéntete libre de usarlo como referencia para tu propio aprendizaje.
 
 ---
 
 <div align="center">
   <p>
-    <a href="#-table-of-contents">Back to top</a>
+    <a href="#-tabla-de-contenido">Volver al inicio</a>
   </p>
   <p>
-    Built with ☕ and Spring Boot · © 2026
+    Construido con ☕ y Spring Boot · © 2026
   </p>
 </div>

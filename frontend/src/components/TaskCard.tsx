@@ -14,6 +14,12 @@ const priorityStyles: Record<string, string> = {
   LOW: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
 };
 
+const priorityLabels: Record<string, string> = {
+  HIGH: 'ALTA',
+  MEDIUM: 'MEDIA',
+  LOW: 'BAJA',
+};
+
 export default function TaskCard({ task, onEdit, onDelete }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -42,7 +48,7 @@ export default function TaskCard({ task, onEdit, onDelete }: Props) {
       <div className="flex items-start justify-between gap-2">
         <h4 className="font-semibold text-gray-900 dark:text-[#F2F2F5] text-sm">{task.title}</h4>
         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityStyles[task.priority]}`}>
-          {task.priority}
+          {priorityLabels[task.priority] || task.priority}
         </span>
       </div>
       {task.description && (
@@ -59,16 +65,16 @@ export default function TaskCard({ task, onEdit, onDelete }: Props) {
         )}
         {dueDate && (
           <span className={`text-xs ${isOverdue ? 'text-[#FF6B6B] font-bold' : isDueSoon ? 'text-yellow-500 font-medium' : 'text-gray-400 dark:text-[#9494A0]'}`}>
-            {dueDate.toLocaleDateString()}
+            {isOverdue ? 'Vencida' : isDueSoon ? 'Por vencer' : dueDate.toLocaleDateString()}
           </span>
         )}
       </div>
       <div className="flex gap-3 mt-3 pt-2 border-t dark:border-gray-700">
         <button onClick={() => onEdit(task)} className="text-xs font-medium text-[#7C5CFC] hover:text-[#6a4de6]">
-          Edit
+          Editar
         </button>
         <button onClick={() => onDelete(task.id)} className="text-xs font-medium text-[#FF6B6B] hover:text-[#e05555]">
-          Delete
+          Eliminar
         </button>
       </div>
     </div>

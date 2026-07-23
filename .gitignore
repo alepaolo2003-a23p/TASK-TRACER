@@ -29,6 +29,10 @@ application-local.yml
 .DS_Store
 Thumbs.db
 
+# === Work notes ===
+errores/
+mejoras/
+
 # === Spring Boot ===
 *.pid
 heapdump.*

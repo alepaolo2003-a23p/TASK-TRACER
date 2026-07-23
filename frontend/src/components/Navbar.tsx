@@ -4,9 +4,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 
 const navLinks = [
-  { path: '/', label: 'Dashboard' },
+  { path: '/', label: 'Tablero' },
   { path: '/kanban', label: 'Kanban' },
-  { path: '/categories', label: 'Categories' },
+  { path: '/categories', label: 'Categorías' },
 ];
 
 export default function Navbar() {
@@ -39,14 +39,14 @@ export default function Navbar() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={toggleDarkMode} className="btn-ghost p-2 text-lg" title="Toggle theme">
+          <button onClick={toggleDarkMode} className="btn-ghost p-2 text-lg" title="Cambiar tema">
             {darkMode ? '☀️' : '🌙'}
           </button>
           <span className="hidden sm:block text-sm text-gray-600 dark:text-[#9494A0]">{user?.username}</span>
           <button onClick={logout} className="btn-ghost text-red-500 hover:text-red-600 dark:text-[#FF6B6B] dark:hover:text-[#FF6B6B]/80">
-            Logout
+            Cerrar sesión
           </button>
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden btn-ghost p-2">
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden btn-ghost p-2" aria-label="Menú">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

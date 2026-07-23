@@ -35,7 +35,7 @@ export default function KanbanColumn({ status, title, color, tasks, onEdit, onDe
             <TaskCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} />
           ))}
           {tasks.length === 0 && (
-            <p className="text-xs text-[#9494A0] text-center py-6">Drop tasks here</p>
+            <p className="text-xs text-[#9494A0] text-center py-6">Suelta tareas aquí</p>
           )}
         </div>
       </SortableContext>
