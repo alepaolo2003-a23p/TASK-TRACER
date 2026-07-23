@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres",
+    "startCommand": "java -jar target/*.jar --spring.profiles.active=postgres",
     "healthcheckPath": "/actuator/health",
     "restartPolicyType": "ON_FAILURE"
   }
