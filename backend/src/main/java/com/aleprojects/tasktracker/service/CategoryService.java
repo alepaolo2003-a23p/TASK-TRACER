@@ -48,7 +48,7 @@ public class CategoryService {
 
     public CategoryResponse updateCategory(UUID userId, UUID categoryId, CategoryRequest request) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category", categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría", categoryId));
         validateOwnership(category, userId);
         categoryMapper.updateEntity(category, request);
         category = categoryRepository.save(category);
@@ -57,19 +57,19 @@ public class CategoryService {
 
     public void deleteCategory(UUID userId, UUID categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category", categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría", categoryId));
         validateOwnership(category, userId);
         categoryRepository.delete(category);
     }
 
     private User getUser(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UnauthorizedException("User not found. Token invalid or user was deleted."));
+                .orElseThrow(() -> new UnauthorizedException("Usuario no encontrado. Token inválido o el usuario fue eliminado."));
     }
 
     private void validateOwnership(Category category, UUID userId) {
         if (!category.getUser().getId().equals(userId)) {
-            throw new ResourceNotFoundException("Category", category.getId());
+            throw new ResourceNotFoundException("Categoría", category.getId());
         }
     }
 }

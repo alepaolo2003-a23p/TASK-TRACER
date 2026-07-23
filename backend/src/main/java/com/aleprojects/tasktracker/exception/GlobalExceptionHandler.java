@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
-        return buildResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+        return buildResponse(HttpStatus.UNAUTHORIZED, "Credenciales inválidas");
     }
 
     @ExceptionHandler(UnauthorizedException.class)
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleNotReadable(HttpMessageNotReadableException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, "Invalid request body: " + ex.getMostSpecificCause().getMessage());
+        return buildResponse(HttpStatus.BAD_REQUEST, "Cuerpo de solicitud inválido: " + ex.getMostSpecificCause().getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

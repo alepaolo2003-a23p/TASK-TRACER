@@ -61,7 +61,7 @@ public class TaskService {
 
     public TaskResponse getTaskById(UUID userId, UUID taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", taskId));
+                .orElseThrow(() -> new ResourceNotFoundException("Tarea", taskId));
         validateOwnership(task, userId);
         return taskMapper.toResponse(task);
     }
@@ -80,7 +80,7 @@ public class TaskService {
 
     public TaskResponse updateTask(UUID userId, UUID taskId, TaskRequest request) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", taskId));
+                .orElseThrow(() -> new ResourceNotFoundException("Tarea", taskId));
         validateOwnership(task, userId);
 
         Category category = request.getCategoryId() != null
@@ -94,14 +94,14 @@ public class TaskService {
 
     public void deleteTask(UUID userId, UUID taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", taskId));
+                .orElseThrow(() -> new ResourceNotFoundException("Tarea", taskId));
         validateOwnership(task, userId);
         taskRepository.delete(task);
     }
 
     public TaskResponse updateTaskStatus(UUID userId, UUID taskId, TaskStatus newStatus) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", taskId));
+                .orElseThrow(() -> new ResourceNotFoundException("Tarea", taskId));
         validateOwnership(task, userId);
         task.setStatus(newStatus);
         task = taskRepository.save(task);
@@ -110,12 +110,12 @@ public class TaskService {
 
     private User getUser(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UnauthorizedException("User not found. Token invalid or user was deleted."));
+                .orElseThrow(() -> new UnauthorizedException("Usuario no encontrado. Token inválido o el usuario fue eliminado."));
     }
 
     private void validateOwnership(Task task, UUID userId) {
         if (!task.getUser().getId().equals(userId)) {
-            throw new ResourceNotFoundException("Task", task.getId());
+            throw new ResourceNotFoundException("Tarea", task.getId());
         }
     }
 }

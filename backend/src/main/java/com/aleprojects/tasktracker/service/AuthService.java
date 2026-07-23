@@ -33,10 +33,10 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new BadRequestException("Username already taken");
+            throw new BadRequestException("El usuario ya existe");
         }
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email already registered");
+            throw new BadRequestException("El correo ya está registrado");
         }
 
         User user = new User(
@@ -56,11 +56,11 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid username or password");
+            throw new BadCredentialsException("Credenciales inválidas");
         }
 
         User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+                .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));
 
         String token = tokenProvider.generateToken(user.getId(), user.getUsername());
         return new AuthResponse(token, user.getId(), user.getUsername(), user.getEmail());
