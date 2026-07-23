@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
@@ -29,7 +30,7 @@ public class WebConfig {
     private String corsOrigins;
 
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
         String[] originArray = corsOrigins.split(",");
         List<String> originList = new ArrayList<>();
         for (String origin : originArray) {
@@ -51,6 +52,11 @@ public class WebConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
+    public CorsFilter corsFilter(CorsConfigurationSource source) {
         return new CorsFilter(source);
     }
 
