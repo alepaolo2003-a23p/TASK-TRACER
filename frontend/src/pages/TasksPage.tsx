@@ -131,25 +131,39 @@ export default function TasksPage() {
     if (!over) return;
 
     const taskId = active.id as string;
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-
     const overId = over.id as string;
     const isOverColumn = columns.some((c) => c.status === overId);
+
+    setTasks((prev) => {
+      const task = prev.find((t) => t.id === taskId);
+      if (!task) return prev;
+
+      const targetStatus = isOverColumn ? (overId as TaskStatusType) : task.status;
+
+      if (targetStatus !== task.status) {
+        return prev.map((t) => (t.id === taskId ? { ...t, status: targetStatus } : t));
+      }
+
+      const sameColumn = prev.filter((t) => t.status === task.status);
+      const oldIndex = sameColumn.findIndex((t) => t.id === taskId);
+      const newIndex = sameColumn.findIndex((t) => t.id === overId);
+      if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+        const reordered = arrayMove(sameColumn, oldIndex, newIndex);
+        return prev.map((t) => (t.status === task.status ? reordered.find((r) => r.id === t.id) || t : t));
+      }
+
+      return prev;
+    });
+
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
     const targetStatus = isOverColumn ? (overId as TaskStatusType) : task.status;
-
     if (targetStatus !== task.status) {
-      await taskService.updateStatus(taskId, targetStatus);
-      await loadData();
-      return;
-    }
-
-    const columnTasks = getTasksByStatus(task.status);
-    const oldIndex = columnTasks.findIndex((t) => t.id === taskId);
-    const newIndex = columnTasks.findIndex((t) => t.id === overId);
-    if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-      const reordered = arrayMove(columnTasks, oldIndex, newIndex);
-      setTasks(tasks.map((t) => (t.status === task.status ? reordered.find((r) => r.id === t.id) || t : t)));
+      try {
+        await taskService.updateStatus(taskId, targetStatus);
+      } catch {
+        await loadData();
+      }
     }
   };
 
