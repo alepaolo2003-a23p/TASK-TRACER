@@ -434,7 +434,11 @@ Docker estaba planeado inicialmente pero no pudo instalarse en la máquina de de
 - Tipografía Inter de Google Fonts para una apariencia limpia y profesional
 
 ### Diseño responsive y soporte táctil
-- Tablero Kanban adaptable a dispositivos móviles con desplazamiento horizontal
+- Tablero Kanban adaptable a dispositivos móviles con columnas apiladas verticalmente (una debajo de otra) en lugar de scroll horizontal
+- Cada columna del Kanban se puede colapsar/expandir con un chevron, permitiendo enfocarse en columnas específicas sin scrollear
+- Resumen compacto de conteo de tareas en la parte superior del Kanban en móvil ("3 en Por hacer · 5 en En progreso · 2 en Completado")
+- Límite de 8 tarjetas visibles por columna con botón "Ver más" para expandir si hay muchas tareas, evitando que una columna domine toda la pantalla
+- Transiciones suaves CSS al expandir/colapsar columnas
 - Soporte de arrastrar y soltar táctil mediante PointerSensor + TouchSensor de @dnd-kit
 - Navbar responsive con menú hamburguesa en pantallas pequeñas
 - Formularios y tarjetas optimizados para interacción táctil (altura mínima de 44px en botones)
