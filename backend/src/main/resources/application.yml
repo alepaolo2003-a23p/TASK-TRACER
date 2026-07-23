@@ -28,6 +28,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+logging:
+  level:
+    org.springframework.security: DEBUG
+
 management:
   endpoints:
     web:
