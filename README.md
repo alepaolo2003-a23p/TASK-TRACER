@@ -1,326 +1,477 @@
-# Task Tracker
+<div align="center">
+  <h1>📋 Task Tracker</h1>
+  <p><strong>Full-stack task management application with Kanban board, JWT authentication, and cloud deployment</strong></p>
 
-A personal task management web application built as a full-stack portfolio project. Features a Kanban board with drag & drop, task filtering, categories with color labels, and JWT authentication — running locally or deployed to the cloud (Railway + Vercel).
-
-## Tech Stack
-
-| Layer      | Technology                                                          |
-| ---------- | ------------------------------------------------------------------- |
-| Backend    | Java 21, Spring Boot 3.3, Spring Security + JWT                     |
-| Frontend   | React 18, TypeScript, Vite, Tailwind CSS                            |
-| Database   | PostgreSQL 16                                                        |
-| ORM        | Spring Data JPA (Hibernate)                                         |
-| API Docs   | Swagger/OpenAPI (springdoc-openapi)                                 |
-| Drag & Drop| @dnd-kit/core                                                       |
-| Auth       | JWT (jjwt library)                                                  |
-| Deploy     | Railway (backend + DB) + Vercel (frontend)                          |
-
-## Architecture
-
-### Local development
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Frontend   │────▶│   Backend    │────▶│  PostgreSQL  │
-│  React + Vite│  ▲  │ Spring Boot  │     │   localhost   │
-│   :5173      │  │  │    :8080     │     │    :5432     │
-└──────────────┘  │  └──────────────┘     └──────────────┘
-                  │
-          proxy de Vite
-         (vite.config.ts)
-```
-
-### Production (Railway + Vercel)
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Vercel     │────▶│   Railway    │────▶│  Railway     │
-│   Frontend   │     │   Backend    │     │  PostgreSQL  │
-│   SPA React  │     │ Spring Boot  │     │  Administrado│
-└──────────────┘     └──────────────┘     └──────────────┘
-```
-
-## Features
-
-### MVP
-- [x] Full CRUD for tasks (create, read, update, delete)
-- [x] Filtering by status, priority, and category
-- [x] Text search across titles and descriptions
-- [x] Kanban board with drag & drop (TODO → IN_PROGRESS → DONE)
-- [x] Due date visual alerts (overdue in red, due soon in yellow)
-- [x] Categories with custom colors
-- [x] JWT authentication (register/login)
-- [x] Swagger/OpenAPI documentation at `/swagger-ui.html`
-
-### Optional
-- [x] Dark mode toggle
-- [ ] Recurring tasks (database model ready)
-- [ ] Statistics dashboard with charts
-- [ ] Browser notifications
+  <p>
+    <img src="https://img.shields.io/badge/Java-21-%23ED8B00?logo=openjdk&logoColor=white" alt="Java 21">
+    <img src="https://img.shields.io/badge/Spring_Boot-3.3-%236DB33F?logo=springboot&logoColor=white" alt="Spring Boot 3.3">
+    <img src="https://img.shields.io/badge/React-18-%2361DAFB?logo=react&logoColor=white" alt="React 18">
+    <img src="https://img.shields.io/badge/PostgreSQL-16-%234169E1?logo=postgresql&logoColor=white" alt="PostgreSQL 16">
+    <img src="https://img.shields.io/badge/Railway-deployed-%230B0D0E?logo=railway" alt="Railway">
+    <img src="https://img.shields.io/badge/Vercel-deployed-%23000000?logo=vercel" alt="Vercel">
+  </p>
+</div>
 
 ---
 
-## Requisitos previos (Windows)
+## 📑 Table of Contents
 
-### 1. Instalar JDK 21
+- [Overview](#-overview)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Features](#-features)
+- [Local Setup](#-local-setup)
+- [Usage](#-usage)
+- [API Documentation](#-api-documentation)
+- [Deployment](#-deployment)
+- [Technical Decisions](#-technical-decisions)
+- [What I Learned](#-what-i-learned)
+- [License](#-license)
 
-1. Descarga **Eclipse Temurin JDK 21** (MSI installer) desde:  
-   https://adoptium.net/temurin/releases/?version=21
-2. Ejecuta el instalador, todo por defecto.
-3. Verifica en una terminal nueva:
-   ```powershell
-   java -version
-   # → openjdk version "21.0.x"
-   ```
+---
 
-### 2. Instalar Node.js 18+
+## 📌 Overview
 
-1. Descarga desde: https://nodejs.org/ (versión LTS recomendada, 18 o superior)
-2. Ejecuta el instalador, todo por defecto.
-3. Verifica:
-   ```powershell
-   node --version  # → v18.x o superior
-   npm --version   # → 10.x o superior
-   ```
+**Task Tracker** is a personal task management web application built as a full-stack portfolio project. It allows users to create, organize, and track tasks through a visual Kanban board with drag & drop, color-coded categories, priority levels, and due date alerts.
 
-### 3. Instalar PostgreSQL 16
+The project is designed to run both **locally** (for development) and **in the cloud** (for portfolio demonstration) using Railway for the backend + database and Vercel for the frontend.
 
-1. Descarga el instalador oficial desde:  
-   https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
-2. Selecciona **PostgreSQL 16** para Windows x64.
-3. Durante la instalación:
-   - **Password**: pon `postgres` (para coincidir con la configuración por defecto). Si pones otra, luego ajústalo en `application-local.yml`.
-   - **Port**: 5432 (por defecto)
-   - Deja marcado "Stack Builder" al final (no es necesario, puedes omitirlo).
-4. Al terminar, PostgreSQL se instala como servicio de Windows y arranca automáticamente.
-5. Verifica (busca el servicio o usa PowerShell como admin):
-   ```powershell
-   psql -U postgres -c "SELECT version();"
-   ```
-   (Te pedirá la contraseña que pusiste en la instalación)
+**Live demo:** [task-tracker.vercel.app](https://task-tracker.vercel.app) *(pending deployment)*
 
-### 4. Crear la base de datos
+---
 
-Abre PowerShell y ejecuta:
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Backend** | Java 21, Spring Boot 3.3, Spring Security, Spring Data JPA |
+| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS |
+| **Database** | PostgreSQL 16 |
+| **Authentication** | JWT (jjwt library) |
+| **API Documentation** | Swagger / OpenAPI (springdoc-openapi) |
+| **Drag & Drop** | @dnd-kit/core |
+| **Deployment** | Railway (backend + DB), Vercel (frontend) |
+
+---
+
+## 🏗 Architecture
+
+### Local Development
+
+```
+┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
+│   Frontend       │      │   Backend        │      │   PostgreSQL     │
+│   React + Vite   │─────▶│   Spring Boot    │─────▶│   localhost:5432 │
+│   localhost:5173 │  ▲   │   localhost:8080 │      │   tasktracker    │
+└──────────────────┘  │   └──────────────────┘      └──────────────────┘
+                      │
+              Vite Proxy (vite.config.ts)
+           /api → http://localhost:8080
+```
+
+### Production (Cloud)
+
+```
+┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
+│   Vercel         │      │   Railway        │      │   Railway        │
+│   Frontend SPA   │─────▶│   Spring Boot    │─────▶│   PostgreSQL     │
+│   .vercel.app    │  🌐  │   .railway.app   │      │   Managed        │
+└──────────────────┘      └──────────────────┘      └──────────────────┘
+        │                          │
+        │  CORS config             │  Env vars injected
+        │  CORS_ORIGINS=https://   │  PGHOST, PGPORT, etc.
+        │  tu-frontend.vercel.app  │
+```
+
+### Backend Structure
+
+```
+backend/
+├── src/main/java/com/aleprojects/tasktracker/
+│   ├── controller/        # REST endpoints (Auth, Task, Category)
+│   ├── service/           # Business logic layer
+│   ├── repository/        # JPA data access (Spring Data)
+│   ├── model/entity/      # JPA entities (Task, Category, User)
+│   ├── model/enums/       # TaskStatus, Priority
+│   ├── dto/               # Request/Response objects
+│   ├── mapper/            # Entity ↔ DTO converters
+│   ├── security/          # JWT filters + Spring Security config
+│   ├── exception/         # Global exception handling (@ControllerAdvice)
+│   └── config/            # CORS, Swagger/OpenAPI
+├── system.properties      # Java version for Railway
+├── Procfile               # Start command for Railway
+├── railway.json           # Railway build configuration
+└── pom.xml
+```
+
+### Frontend Structure
+
+```
+frontend/
+├── src/
+│   ├── pages/             # Login, Register, Dashboard, Kanban, Categories
+│   ├── components/        # Navbar, TaskCard, TaskForm, KanbanColumn
+│   ├── services/          # API client (Axios), auth, tasks, categories
+│   ├── contexts/          # AuthContext, ThemeContext (dark mode)
+│   └── types/             # TypeScript interfaces and enums
+├── vercel.json            # SPA routing config for Vercel
+├── vite.config.ts         # Vite proxy to backend
+└── package.json
+```
+
+---
+
+## ✨ Features
+
+### Core
+- ✅ Full CRUD for tasks (create, read, update, delete)
+- ✅ Kanban board with drag & drop (TODO → IN_PROGRESS → DONE)
+- ✅ Filtering by status, priority, and category
+- ✅ Full-text search across titles and descriptions
+- ✅ Due date visual alerts (overdue in red, due soon in yellow)
+- ✅ Categories with custom color picker
+- ✅ JWT authentication (register / login)
+- ✅ Swagger/OpenAPI documentation
+
+### Plus
+- ✅ Dark mode toggle
+- ⬜ Recurring tasks (database model ready)
+- ⬜ Statistics dashboard with charts
+- ⬜ Browser notifications for due tasks
+
+---
+
+## 💻 Local Setup
+
+### Prerequisites
+
+Install these tools **in this order**:
+
+| Tool | Version | Download |
+|---|---|---|
+| **JDK** | 21 (LTS) | [Eclipse Temurin JDK 21](https://adoptium.net/temurin/releases/?version=21) |
+| **PostgreSQL** | 16 or 17 | [EDB PostgreSQL Installer](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads) |
+| **Node.js** | 18+ (LTS) | [nodejs.org](https://nodejs.org/) |
+
+### Step 1: Create the database
 
 ```powershell
+# Conéctate a PostgreSQL y crea la base de datos
 psql -U postgres -c "CREATE DATABASE tasktracker;"
 ```
+*(Te pedirá la contraseña que pusiste al instalar PostgreSQL)*
 
-(O créala desde pgAdmin si prefieres interfaz gráfica — se instala junto con PostgreSQL)
+### Step 2: Configure access
 
----
+Crea `backend/src/main/resources/application-local.yml` con tu contraseña:
 
-## Ejecución local
-
-### Opción A: Un solo clic (recomendado)
-
-Ejecuta el script de arranque desde la raíz del proyecto:
-
-```powershell
-.\start.bat
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tasktracker
+    username: postgres
+    password: TU_CONTRASEÑA_AQUI
 ```
 
-Esto abre dos ventanas:
-- **Backend** (puerto 8080) — compila y arranca Spring Boot
-- **Frontend** (puerto 5173) — arranca Vite dev server
+> **⚠️ Este archivo está en `.gitignore`** — no se subirá a GitHub.
 
-Luego abre `http://localhost:5173`.
+### Step 3: Start the backend
 
-### Opción B: Dos terminales manuales
-
-**Terminal 1 — Backend:**
 ```powershell
 cd backend
 .\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-**Terminal 2 — Frontend:**
+> `mvnw.cmd` descarga automáticamente Maven 3.9.8 si no lo tienes instalado.
+
+### Step 4: Start the frontend
+
 ```powershell
 cd frontend
-npm install    # solo la primera vez
+npm install
 npm run dev
 ```
 
-### Opción C: Un solo comando con `concurrently`
+### Step 5: Open the app
 
-Si prefieres no abrir dos ventanas, puedes instalar `concurrently` y usar un solo comando:
+Navigate to [http://localhost:5173](http://localhost:5173), register a new account, and start using Task Tracker.
 
-1. Crea un archivo `package.json` en la raíz del proyecto:
-   ```json
-   {
-     "name": "task-tracker",
-     "private": true,
-     "scripts": {
-       "dev": "concurrently -n BE,FE -c blue,green \"cd backend && mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local\" \"cd frontend && npm run dev\""
-     },
-     "devDependencies": {
-       "concurrently": "^8.2.0"
-     }
-   }
-   ```
-2. Instala y ejecuta:
-   ```powershell
-   npm install
-   npm run dev
-   ```
+### Quick Start (single command)
 
-**¿Cuál conviene más?**
-- **`start.bat`** es más simple, no requiere instalar nada adicional, y cada servicio corre en su propia ventana con sus logs visibles. Es la opción recomendada para Windows.
-- **`concurrently`** unifica los logs en una sola terminal y funciona en cualquier SO, pero requiere un `package.json` raíz. Es mejor si planeas compartir el proyecto con usuarios de Mac/Linux.
+Run `start.bat` from the project root — it opens both services in separate windows:
 
-### Variables de entorno local
+```powershell
+.\start.bat
+```
 
-El backend lee la conexión a PostgreSQL de estas variables de entorno:
+### H2 Console (if using embedded database)
 
-| Variable      | Default     | Description              |
-|---------------|-------------|--------------------------|
-| `PGHOST`      | `localhost` | Host de PostgreSQL       |
-| `PGPORT`      | `5432`      | Puerto                   |
-| `PGDATABASE`  | `tasktracker` | Nombre de base de datos |
-| `PGUSER`      | `postgres`  | Usuario                  |
-| `PGPASSWORD`  | `postgres`  | Contraseña               |
-| `JWT_SECRET`  | *(default)* | Clave secreta JWT        |
+If you want to run without PostgreSQL (for quick testing):
 
-Si usas `-Dspring-boot.run.profiles=local`, Spring Boot carga `application-local.yml` donde puedes sobreescribir cualquiera de estas. Ese archivo **no se sube a Git** (está en `.gitignore`).
+```yaml
+# In application.yml, change datasource to:
+spring:
+  datasource:
+    url: jdbc:h2:mem:tasktracker
+    username: sa
+    password:
+```
+
+Then access: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
 
 ---
 
-## Uso de la API
+## 🎮 Usage
 
-Accede a Swagger UI para probar los endpoints desde el navegador:
+### First-time flow
 
-```
-http://localhost:8080/swagger-ui.html
-```
+1. Open the app → redirected to **Login**
+2. Click **"Create account"** → register with username, email, password
+3. Go to **Categories** → create categories with colors (e.g., Work, Personal, Urgent)
+4. Go to **Dashboard** or **Kanban** → create tasks
+5. Drag tasks between columns on the **Kanban** board
 
-### Authentication (`/api/auth`)
-| Method | Path       | Description       |
-| ------ | ---------- | ----------------- |
-| POST   | `/register`| Create new user   |
-| POST   | `/login`   | Authenticate user |
+### Environment Variables
 
-### Tasks (`/api/tasks`)
-| Method | Path            | Description                 |
-| ------ | --------------- | --------------------------- |
-| GET    | `/`             | List tasks (with filters)   |
-| GET    | `/{id}`         | Get task by ID              |
-| POST   | `/`             | Create task                 |
-| PUT    | `/{id}`         | Update task                 |
-| PATCH  | `/{id}/status`  | Update task status          |
-| DELETE | `/{id}`         | Delete task                 |
-
-**Query parameters:** `status`, `priority`, `categoryId`, `search`
-
-### Categories (`/api/categories`)
-| Method | Path     | Description           |
-| ------ | -------- | --------------------- |
-| GET    | `/`      | List categories       |
-| POST   | `/`      | Create category       |
-| PUT    | `/{id}`  | Update category       |
-| DELETE | `/{id}`  | Delete category       |
+| Variable | Default | Description |
+|---|---|---|
+| `PGHOST` | `localhost` | PostgreSQL host |
+| `PGPORT` | `5432` | PostgreSQL port |
+| `PGDATABASE` | `tasktracker` | Database name |
+| `PGUSER` | `postgres` | Database user |
+| `PGPASSWORD` | `postgres` | Database password |
+| `JWT_SECRET` | *(embedded default)* | Secret key for JWT signing |
+| `JWT_EXPIRATION_MS` | `86400000` | JWT validity (24h) |
+| `CORS_ORIGINS` | `http://localhost:5173` | Allowed CORS origins (comma-separated) |
 
 ---
 
-## Despliegue en producción
+## 📖 API Documentation
 
-La aplicación se despliega en dos plataformas:
-- **Railway** — aloja el backend (Spring Boot) y la base de datos PostgreSQL
-- **Vercel** — aloja el frontend (React SPA)
+Interactive API docs are available at [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) when the backend is running.
 
-### Arquitectura de producción
+### Authentication
 
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/register` | Create a new user |
+| `POST` | `/api/auth/login` | Authenticate and get JWT token |
+
+**Register:**
+```json
+{ "username": "demo", "password": "demo123", "email": "demo@test.com" }
 ```
-https://tufrontend.vercel.app          ← Vercel (frontend)
-         │
-         │  peticiones a /api/*
-         ▼
-https://tubackend.railway.app          ← Railway (backend)
-         │
-         │  conexión JDBC
-         ▼
-PostgreSQL administrado por Railway    ← Railway (base de datos)
-```
-
-### Paso 1: Railway (backend + base de datos)
-
-1. Crea una cuenta en https://railway.app (GitHub login)
-2. Crea un **New Project** → **Deploy from GitHub repo**
-3. Selecciona tu repositorio de Task Tracker
-4. Railway detecta automáticamente el `pom.xml` y configura el build de Maven
-5. Ve a la pestaña **Variables** y agrega:
-   - `JWT_SECRET` — una clave secreta larga y aleatoria (ej. generada con: `openssl rand -base64 32`)
-   - `CORS_ORIGINS` — la URL de tu frontend en Vercel (ej. `https://task-tracker.vercel.app`)
-6. Railway provee PostgreSQL automáticamente. Ve a **New** → **Database** → **Add PostgreSQL**. Railway inyecta automáticamente las variables `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD` en el backend.
-7. Railway despliega automáticamente en cada push a la rama principal.
-8. Obtén la URL pública del backend desde el panel de Railway (dominio `*.railway.app` o dominio personalizado).
-
-**Nota sobre la base de datos:** Railway crea una base de datos PostgreSQL administrada con backup automático. Las variables de entorno se inyectan sin necesidad de configurar nada adicional — `application.yml` ya lee `PGHOST`, `PGPORT`, etc.
-
-### Paso 2: Vercel (frontend)
-
-1. Crea una cuenta en https://vercel.com (GitHub login)
-2. Haz clic en **Add New** → **Project**
-3. Importa tu repositorio de GitHub
-4. Configura el proyecto:
-   - **Framework Preset:** Vite
-   - **Root Directory:** `frontend/`
-   - **Build Command:** `npm run build` (por defecto)
-   - **Output Directory:** `dist` (por defecto)
-5. En **Environment Variables**, agrega:
-   - `VITE_API_URL` — la URL pública del backend en Railway (ej. `https://tubackend.up.railway.app`)
-6. Haz clic en **Deploy**
-7. Vercel despliega automáticamente en cada push a la rama principal.
-8. Obtén la URL pública (por defecto `tu-proyecto.vercel.app`).
-
-**Importante:** Las variables de entorno se configuran desde el panel de cada plataforma, NO en archivos. No subas a Git archivos `.env` con credenciales reales.
-
-### Paso 3: Actualizar CORS en Railway
-
-Ve a las variables de entorno del backend en Railway y asegúrate de tener:
-
-```
-CORS_ORIGINS=https://tu-frontend.vercel.app
+**Response:**
+```json
+{ "token": "eyJhbGci...", "userId": "uuid", "username": "demo", "email": "demo@test.com" }
 ```
 
-Esto permite que el frontend de Vercel haga peticiones al backend de Railway.
+### Tasks
 
-### Links de la app desplegada
+All task endpoints require `Authorization: Bearer <token>` header.
 
-- **Frontend:** https://task-tracker.vercel.app (pendiente de crear)
-- **Backend:** https://task-tracker-api.railway.app (pendiente de crear)
-- **Swagger:** https://task-tracker-api.railway.app/swagger-ui.html
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/tasks` | List all tasks (supports filtering) |
+| `GET` | `/api/tasks/{id}` | Get task by ID |
+| `POST` | `/api/tasks` | Create a new task |
+| `PUT` | `/api/tasks/{id}` | Update a task |
+| `PATCH` | `/api/tasks/{id}/status` | Update task status only |
+| `DELETE` | `/api/tasks/{id}` | Delete a task |
+
+**Query parameters for `GET /api/tasks`:**
+- `status=TODO` | `IN_PROGRESS` | `DONE`
+- `priority=LOW` | `MEDIUM` | `HIGH`
+- `categoryId=<uuid>`
+- `search=<text>` (searches title and description)
+
+**Create task:**
+```json
+{
+  "title": "Learn Spring Boot",
+  "description": "Complete the Task Tracker project",
+  "status": "TODO",
+  "priority": "HIGH",
+  "dueDate": "2026-08-15",
+  "categoryId": null,
+  "recurring": false
+}
+```
+
+**Update status (body is plain text):**
+```
+IN_PROGRESS
+```
+
+### Categories
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/categories` | List all categories |
+| `POST` | `/api/categories` | Create a category |
+| `PUT` | `/api/categories/{id}` | Update a category |
+| `DELETE` | `/api/categories/{id}` | Delete a category |
+
+**Create category:**
+```json
+{ "name": "Work", "color": "#6366f1" }
+```
 
 ---
 
-## Technical Decisions
+## 🚀 Deployment
 
-### Why Spring Boot?
-Spring Boot provides a robust, production-ready framework with built-in security (Spring Security), ORM (Spring Data JPA), and validation. It's widely used in enterprise Java.
+The application is deployed across two platforms:
 
-### Why PostgreSQL over H2 for local?
-PostgreSQL is the same database used in production (Railway). Using it locally ensures no surprises between environments. H2 was used initially when Docker wasn't available and PostgreSQL couldn't be installed.
+| Service | Platform | Purpose |
+|---|---|---|
+| **Backend** | [Railway](https://railway.app) | Spring Boot API + PostgreSQL database |
+| **Frontend** | [Vercel](https://vercel.com) | React SPA static hosting |
 
-### Why Railway + Vercel instead of a single provider?
-Railway is excellent for backend services (Spring Boot + PostgreSQL) but Vercel is optimized for static frontend deployments with automatic CDN, preview URLs per branch, and simpler configuration for SPAs.
+### Deploy Backend to Railway
 
-### Why Maven Wrapper (`mvnw.cmd` / `mvnw`)?
-The wrapper downloads the correct Maven version automatically if not installed. This ensures consistent builds across environments (local, Railway CI).
+#### 1. Create a Railway account
+- Go to [railway.app](https://railway.app) and sign up with GitHub
+- Install the Railway GitHub app when prompted
+
+#### 2. Create the project
+- Click **New Project** → **Deploy from GitHub repo**
+- Select your `task-tracker` repository
+- Railway detects Maven and builds automatically
+
+#### 3. Add PostgreSQL database
+- In the Railway dashboard, click **New** → **Database** → **Add PostgreSQL**
+- Railway automatically injects these environment variables into your backend:
+  - `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`
+
+#### 4. Configure environment variables
+In the Railway dashboard, go to your backend service → **Variables** tab and add:
+
+| Variable | Value | Why |
+|---|---|---|
+| `JWT_SECRET` | Generate a long random secret | Signs JWT tokens securely |
+| `CORS_ORIGINS` | `https://tu-proyecto.vercel.app` | Allows frontend to call the API |
+| `SPRING_PROFILES_ACTIVE` | `postgres` | Activates PostgreSQL configuration |
+| `PGHOST` | *(auto-injected by Railway)* | PostgreSQL host |
+| `PGPORT` | *(auto-injected by Railway)* | PostgreSQL port |
+| `PGDATABASE` | *(auto-injected by Railway)* | Database name |
+| `PGUSER` | *(auto-injected by Railway)* | Database user |
+| `PGPASSWORD` | *(auto-injected by Railway)* | Database password |
+
+> **Note:** Railway provides PostgreSQL through a **Plugin**, which auto-injects the `PG*` variables. You may need to check the exact variable names in the Railway dashboard after adding PostgreSQL.
+
+#### 5. Deploy
+- Railway deploys automatically on every push to the main branch
+- Your backend will be available at `https://<your-project>.railway.app`
+
+### Deploy Frontend to Vercel
+
+#### 1. Create a Vercel account
+- Go to [vercel.com](https://vercel.com) and sign up with GitHub
+
+#### 2. Import the repository
+- Click **Add New** → **Project**
+- Select your `task-tracker` repository
+- Configure the project:
+
+| Setting | Value |
+|---|---|
+| **Framework Preset** | Vite (auto-detected) |
+| **Root Directory** | `frontend/` |
+| **Build Command** | `npm run build` |
+| **Output Directory** | `dist` |
+
+#### 3. Configure environment variables
+In Vercel, go to your project → **Settings** → **Environment Variables** and add:
+
+| Variable | Value |
+|---|---|
+| `VITE_API_URL` | `https://<tu-backend>.railway.app` |
+
+> **Important:** This tells the frontend where to find the backend API in production. In local development, it uses the Vite proxy instead.
+
+#### 4. Deploy
+- Click **Deploy**
+- Vercel builds and deploys automatically on every push to the main branch
+- Your frontend will be available at `https://<your-project>.vercel.app`
+
+### After Deployment
+
+1. Update `CORS_ORIGINS` in Railway if needed
+2. Register a user through the deployed frontend
+3. Verify that all API endpoints work
+
+### Live URLs
+
+| Service | URL |
+|---|---|
+| **Frontend** | [https://task-tracker.vercel.app](https://task-tracker.vercel.app) |
+| **Backend API** | [https://task-tracker-api.railway.app](https://task-tracker-api.railway.app) |
+| **Swagger Docs** | [https://task-tracker-api.railway.app/swagger-ui.html](https://task-tracker-api.railway.app/swagger-ui.html) |
+
+> *(URLs are placeholders — update after actual deployment)*
+
+---
+
+## 🧠 Technical Decisions
+
+### Why Spring Boot instead of Express/FastAPI?
+Spring Boot provides enterprise-grade infrastructure out of the box: built-in security (Spring Security), ORM (Spring Data JPA), validation (Bean Validation), and API documentation (SpringDoc OpenAPI). It's widely adopted in the Java ecosystem.
+
+### Why PostgreSQL?
+PostgreSQL is a production-grade relational database with excellent JSON support, concurrent access handling, and is the default choice for Spring Boot applications. It's also available as a managed service on Railway.
+
+### Why Railway + Vercel instead of a single platform?
+Railway excels at deploying backend services with JVM support and managed PostgreSQL, making it ideal for Spring Boot. Vercel provides a superior developer experience for static frontend SPAs with instant preview deployments, automatic CDN, and simpler configuration.
+
+### Why Maven Wrapper?
+The `mvnw.cmd` / `mvnw` scripts download the correct Maven version automatically, ensuring consistent builds across environments (local Windows, Railway Linux CI) without requiring manual Maven installation.
+
+### Why multi-stage Docker builds were removed?
+Docker was initially planned but could not be installed on the development machine (Windows version limitation). The project runs natively instead. Docker containerization can be added later as an incremental improvement.
 
 ### Why @dnd-kit instead of react-beautiful-dnd?
-`react-beautiful-dnd` is no longer maintained. `@dnd-kit` is the modern, maintained alternative with better TypeScript support.
+`react-beautiful-dnd` is no longer maintained by Atlassian. `@dnd-kit` is the modern, actively maintained alternative with first-class TypeScript support, better accessibility, and a more flexible API.
 
-## What I Learned
+---
 
-- **Spring Boot layered architecture**: controllers, services, repositories, DTOs
-- **JWT authentication flow**: token generation, validation, and security filters
-- **React + DnD Kit**: implementing drag & drop Kanban
-- **Spring Data JPA**: derived query methods, `@Query`, entity relationships
-- **Bean Validation**: `@Valid`, `@NotBlank`, `@Pattern` for request validation
-- **Global exception handling**: `@ControllerAdvice`
-- **Environment-specific configuration**: Spring profiles for local vs production
-- **CORS configuration**: allowing multiple origins (local + production)
-- **Railway deployment**: Spring Boot + PostgreSQL in the cloud
-- **Vercel deployment**: React SPA with environment variables
+## 📚 What I Learned
 
-## License
+### Backend (Spring Boot)
+- **Layered architecture** — separation of concerns between controllers, services, repositories, and entities
+- **Spring Data JPA** — derived query methods, `@Query` for custom JPQL, entity relationships (`@ManyToOne`)
+- **JWT authentication** — token generation, validation filters, SecurityContext, stateless sessions
+- **Global exception handling** — `@ControllerAdvice` for centralized error responses
+- **Bean Validation** — `@Valid`, `@NotBlank`, `@Pattern` for request validation
+- **CORS configuration** — allowing multiple origins via environment variables
+- **Spring Profiles** — switching between local (H2) and production (PostgreSQL) configurations
 
-This project is for portfolio purposes.
+### Frontend (React + TypeScript)
+- **Vite proxy** — proxying API requests in development to avoid CORS issues
+- **Drag & drop** — implementing Kanban with `@dnd-kit/core` and `@dnd-kit/sortable`
+- **Context API** — managing global authentication state and dark mode
+- **Axios interceptors** — automatic JWT injection and 401 redirect handling
+- **Tailwind CSS** — responsive design with utility-first CSS and dark mode
+
+### DevOps & Deployment
+- **Spring profiles** for environment-specific configuration
+- **Railway deployment** — Spring Boot + PostgreSQL in the cloud
+- **Vercel deployment** — React SPA with environment variables
+- **Environment variables** — secure configuration via platform dashboards (not committed files)
+
+---
+
+## 📄 License
+
+This project is built for portfolio purposes. Feel free to use it as a reference for your own learning.
+
+---
+
+<div align="center">
+  <p>
+    <a href="#-table-of-contents">Back to top</a>
+  </p>
+  <p>
+    Built with ☕ and Spring Boot · © 2026
+  </p>
+</div>

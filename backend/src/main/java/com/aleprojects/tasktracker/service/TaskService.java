@@ -3,6 +3,7 @@ package com.aleprojects.tasktracker.service;
 import com.aleprojects.tasktracker.dto.TaskRequest;
 import com.aleprojects.tasktracker.dto.TaskResponse;
 import com.aleprojects.tasktracker.exception.ResourceNotFoundException;
+import com.aleprojects.tasktracker.exception.UnauthorizedException;
 import com.aleprojects.tasktracker.mapper.TaskMapper;
 import com.aleprojects.tasktracker.model.entity.Category;
 import com.aleprojects.tasktracker.model.entity.Task;
@@ -109,7 +110,7 @@ public class TaskService {
 
     private User getUser(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+                .orElseThrow(() -> new UnauthorizedException("User not found. Token invalid or user was deleted."));
     }
 
     private void validateOwnership(Task task, UUID userId) {
