@@ -29,8 +29,6 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
   const [priority, setPriority] = useState<Priority>(Priority.MEDIUM);
   const [dueDate, setDueDate] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [recurring, setRecurring] = useState(false);
-  const [recurrenceRule, setRecurrenceRule] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -41,8 +39,6 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
       setPriority(task.priority);
       setDueDate(task.dueDate || '');
       setCategoryId(task.categoryId || '');
-      setRecurring(task.recurring);
-      setRecurrenceRule(task.recurrenceRule || '');
     }
   }, [task]);
 
@@ -57,8 +53,8 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
         priority,
         dueDate: dueDate || null,
         categoryId: categoryId || null,
-        recurring,
-        recurrenceRule: recurrenceRule || null,
+        recurring: false,
+        recurrenceRule: null,
       };
       if (task) {
         await taskService.update(task.id, data);
@@ -71,20 +67,43 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
     }
   };
 
+  const handleDelete = async () => {
+    if (!task) return;
+    setLoading(true);
+    try {
+      await taskService.delete(task.id);
+      onSave();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="label">Título *</label>
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="input" placeholder="Título de la tarea" />
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          className="w-full text-lg font-medium text-foreground bg-transparent border-none outline-none placeholder-subtle p-0"
+          placeholder="Título de la tarea"
+          autoFocus
+        />
       </div>
       <div>
-        <label className="label">Descripción</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="input" placeholder="Descripción opcional" />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={3}
+          className="w-full text-sm text-foreground bg-surface-muted border rounded-[6px] px-3 py-2 outline-none focus:ring-1 focus:ring-ring placeholder-subtle resize-none"
+          placeholder="Añade una descripción..."
+        />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-3">
         <div>
           <label className="label">Estado</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value as TaskStatus)} className="input">
+          <select value={status} onChange={(e) => setStatus(e.target.value as TaskStatus)} className="input text-sm">
             <option value="TODO">{statusLabels.TODO}</option>
             <option value="IN_PROGRESS">{statusLabels.IN_PROGRESS}</option>
             <option value="DONE">{statusLabels.DONE}</option>
@@ -92,51 +111,42 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
         </div>
         <div>
           <label className="label">Prioridad</label>
-          <select value={priority} onChange={(e) => setPriority(e.target.value as Priority)} className="input">
+          <select value={priority} onChange={(e) => setPriority(e.target.value as Priority)} className="input text-sm">
             <option value="LOW">{priorityLabels.LOW}</option>
             <option value="MEDIUM">{priorityLabels.MEDIUM}</option>
             <option value="HIGH">{priorityLabels.HIGH}</option>
           </select>
         </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="label">Fecha límite</label>
-          <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="input" />
+          <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="input text-sm" />
         </div>
+      </div>
+      <div>
+        <label className="label">Etiqueta</label>
+        <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="input text-sm">
+          <option value="">Sin etiqueta</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+      </div>
+      <div className="flex items-center justify-between pt-2 border-t">
         <div>
-          <label className="label">Categoría</label>
-          <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="input">
-            <option value="">Sin categoría</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
+          {task && (
+            <button type="button" onClick={handleDelete} disabled={loading} className="btn-destructive">
+              Eliminar tarea
+            </button>
+          )}
         </div>
-      </div>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" checked={recurring} onChange={(e) => setRecurring(e.target.checked)}
-            className="rounded accent-[#7C5CFC]" />
-          <span className="text-sm text-gray-700 dark:text-[#9494A0]">Recurrente</span>
-        </label>
-        {recurring && (
-          <select value={recurrenceRule} onChange={(e) => setRecurrenceRule(e.target.value)}
-            className="input flex-1">
-            <option value="">Selecciona regla</option>
-            <option value="DAILY">Diario</option>
-            <option value="WEEKLY">Semanal</option>
-            <option value="MONTHLY">Mensual</option>
-          </select>
-        )}
-      </div>
-      <div className="flex gap-3 justify-end pt-2">
-        <button type="button" onClick={onCancel} className="btn-ghost">
-          Cancelar
-        </button>
-        <button type="submit" disabled={loading} className="btn-primary">
-          {loading ? 'Guardando...' : task ? 'Actualizar' : 'Crear'}
-        </button>
+        <div className="flex gap-2">
+          <button type="button" onClick={onCancel} className="btn-ghost">
+            Cancelar
+          </button>
+          <button type="submit" disabled={loading} className="btn-primary">
+            {loading ? 'Guardando...' : task ? 'Guardar' : 'Crear tarea'}
+          </button>
+        </div>
       </div>
     </form>
   );

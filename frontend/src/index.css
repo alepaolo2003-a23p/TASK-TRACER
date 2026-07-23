@@ -2,33 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: #FFFFFF;
+  --surface-muted: #FAFAF9;
+  --surface: #FFFFFF;
+  --border: #E5E5E5;
+  --foreground: #171717;
+  --foreground-muted: #525252;
+  --subtle: #737373;
+  --primary: #171717;
+  --primary-hover: #262626;
+  --primary-text: #FFFFFF;
+  --ring: #171717;
+}
+
+.dark {
+  --background: #0A0A0A;
+  --surface-muted: #171717;
+  --surface: #0A0A0A;
+  --border: #262626;
+  --foreground: #F5F5F5;
+  --foreground-muted: #A3A3A3;
+  --subtle: #737373;
+  --primary: #FFFFFF;
+  --primary-hover: #F5F5F5;
+  --primary-text: #171717;
+  --ring: #F5F5F5;
+}
+
 @layer base {
   * {
-    @apply border-gray-200 dark:border-gray-700;
+    @apply border-border;
   }
   body {
-    @apply antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply antialiased bg-background text-foreground;
+    font-family: 'Inter', -apple-system, 'SF Pro Text', 'Segoe UI', sans-serif;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-white dark:bg-[#1A1A22] rounded-card border shadow-sm dark:shadow-none dark:border-gray-800;
+    @apply bg-surface border rounded-[8px];
   }
   .card-hover {
-    @apply card transition-all duration-200 hover:shadow-md dark:hover:border-gray-600;
+    @apply card transition-all duration-150 hover:shadow-md dark:hover:border-[#333];
   }
   .btn-primary {
-    @apply px-4 py-2 bg-[#7C5CFC] text-white rounded-lg hover:bg-[#6a4de6] disabled:opacity-50 text-sm font-medium transition-colors duration-150;
+    @apply px-4 py-2 bg-primary text-primary-text rounded-[6px] hover:bg-primary-hover disabled:opacity-50 text-sm font-medium transition-colors duration-150;
   }
   .btn-ghost {
-    @apply px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-150 text-gray-600 hover:text-gray-900 dark:text-[#9494A0] dark:hover:text-[#F2F2F5] hover:bg-gray-100 dark:hover:bg-white/5;
+    @apply px-4 py-2 text-sm font-medium rounded-[6px] transition-colors duration-150 text-foreground-muted hover:text-foreground hover:bg-[#171717]/5 dark:hover:bg-white/10;
+  }
+  .btn-destructive {
+    @apply px-4 py-2 text-sm font-medium rounded-[6px] transition-colors duration-150 text-[#EF4444] hover:bg-[#FEF2F2] dark:hover:bg-[rgba(69,10,10,0.4)];
   }
   .input {
-    @apply w-full px-3 py-2 border rounded-lg bg-white dark:bg-[#1A1A22] dark:text-[#F2F2F5] text-sm focus:ring-2 focus:ring-[#7C5CFC] focus:border-[#7C5CFC] outline-none transition-shadow duration-150;
+    @apply w-full px-3 py-2 border rounded-[6px] bg-surface text-foreground text-sm focus:ring-1 focus:ring-ring focus:border-ring outline-none transition-shadow duration-150;
   }
   .label {
-    @apply block text-sm font-medium text-gray-700 dark:text-[#9494A0] mb-1;
+    @apply block text-xs font-medium text-foreground-muted mb-1.5;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1.5 px-2 py-1 rounded-[6px] text-xs font-medium transition-colors;
+  }
+  .priority-dot {
+    @apply w-2 h-2 rounded-full flex-shrink-0;
+  }
+  .badge-high {
+    @apply pill bg-[#FEF2F2] text-[#B91C1C] dark:bg-[rgba(69,10,10,0.4)] dark:text-[#FCA5A5];
+  }
+  .badge-medium {
+    @apply pill bg-[#FFFBEB] text-[#B45309] dark:bg-[rgba(69,26,3,0.4)] dark:text-[#FCD34D];
+  }
+  .badge-low {
+    @apply pill bg-[#F5F5F5] text-[#525252] dark:bg-[#262626] dark:text-[#A3A3A3];
   }
 }

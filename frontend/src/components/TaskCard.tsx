@@ -8,10 +8,10 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
-const priorityStyles: Record<string, string> = {
-  HIGH: 'bg-[#FF6B6B]/10 text-[#FF6B6B] dark:bg-[#FF6B6B]/20',
-  MEDIUM: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-  LOW: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+const priorityClasses: Record<string, string> = {
+  HIGH: 'badge-high',
+  MEDIUM: 'badge-medium',
+  LOW: 'badge-low',
 };
 
 const priorityLabels: Record<string, string> = {
@@ -37,43 +37,56 @@ export default function TaskCard({ task, onEdit, onDelete }: Props) {
   const isOverdue = dueDate && dueDate < today;
   const isDueSoon = dueDate && !isOverdue && dueDate.getTime() - today.getTime() < 3 * 24 * 60 * 60 * 1000;
 
+  const priorityColor =
+    task.priority === 'HIGH' ? '#EF4444' :
+    task.priority === 'MEDIUM' ? '#F59E0B' :
+    '#A3A3A3';
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="card-hover p-3 cursor-grab active:cursor-grabbing touch-manipulation"
+      className="card p-3 cursor-grab active:cursor-grabbing touch-manipulation hover:shadow-md dark:hover:border-[#333] transition-all duration-150"
     >
-      <div className="flex items-start justify-between gap-2">
-        <h4 className="font-semibold text-gray-900 dark:text-[#F2F2F5] text-sm">{task.title}</h4>
-        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityStyles[task.priority]}`}>
-          {priorityLabels[task.priority] || task.priority}
-        </span>
+      <div className="flex items-start gap-3">
+        <div
+          className="priority-dot mt-[6px]"
+          style={{ backgroundColor: priorityColor }}
+        />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <h4 className="text-sm font-medium text-foreground truncate">{task.title}</h4>
+            <span className={`${priorityClasses[task.priority]} text-micro flex-shrink-0`}>
+              {priorityLabels[task.priority] || task.priority}
+            </span>
+          </div>
+          {task.description && (
+            <p className="text-xs text-foreground-muted mt-1 line-clamp-2">{task.description}</p>
+          )}
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            {task.categoryName && (
+              <span
+                className="inline-flex items-center px-2 py-0.5 rounded-[6px] text-micro text-white font-medium"
+                style={{ backgroundColor: task.categoryColor || '#A3A3A3' }}
+              >
+                #{task.categoryName}
+              </span>
+            )}
+            {dueDate && (
+              <span className={`text-micro ${isOverdue ? 'text-[#EF4444] font-medium' : isDueSoon ? 'text-[#F59E0B] font-medium' : 'text-subtle'}`}>
+                {isOverdue ? 'Vencida' : isDueSoon ? 'Por vencer' : dueDate.toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
-      {task.description && (
-        <p className="text-xs text-gray-500 dark:text-[#9494A0] mt-1.5 line-clamp-2">{task.description}</p>
-      )}
-      <div className="flex items-center gap-2 mt-3 flex-wrap">
-        {task.categoryName && (
-          <span
-            className="text-xs px-2 py-0.5 rounded-full text-white font-medium"
-            style={{ backgroundColor: task.categoryColor || '#6b7280' }}
-          >
-            {task.categoryName}
-          </span>
-        )}
-        {dueDate && (
-          <span className={`text-xs ${isOverdue ? 'text-[#FF6B6B] font-bold' : isDueSoon ? 'text-yellow-500 font-medium' : 'text-gray-400 dark:text-[#9494A0]'}`}>
-            {isOverdue ? 'Vencida' : isDueSoon ? 'Por vencer' : dueDate.toLocaleDateString()}
-          </span>
-        )}
-      </div>
-      <div className="flex gap-3 mt-3 pt-2 border-t dark:border-gray-700">
-        <button onClick={() => onEdit(task)} className="text-xs font-medium text-[#7C5CFC] hover:text-[#6a4de6]">
+      <div className="flex gap-3 mt-2 pt-2 border-t">
+        <button onClick={(e) => { e.stopPropagation(); onEdit(task); }} className="text-micro text-foreground-muted hover:text-foreground font-medium transition-colors">
           Editar
         </button>
-        <button onClick={() => onDelete(task.id)} className="text-xs font-medium text-[#FF6B6B] hover:text-[#e05555]">
+        <button onClick={(e) => { e.stopPropagation(); onDelete(task.id); }} className="text-micro text-[#EF4444] hover:text-[#B91C1C] font-medium transition-colors">
           Eliminar
         </button>
       </div>
