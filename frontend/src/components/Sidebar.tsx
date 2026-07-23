@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import Logo from './Logo';
 
 const navItems = [
   {
@@ -17,16 +18,25 @@ const navItems = [
   },
 ];
 
-export default function Sidebar() {
+interface Props {
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function Sidebar({ open, onClose }: Props) {
   const { user, logout } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
   const location = useLocation();
 
-  return (
-    <aside className="fixed top-0 left-0 h-screen w-[256px] bg-surface-muted border-r flex flex-col z-50">
+  const handleNav = () => {
+    onClose();
+  };
+
+  const sidebarContent = (
+    <>
       <div className="px-6 pt-6 pb-4">
-        <Link to="/" className="flex items-center gap-2">
-          <img src="/stride-logo.png" alt="Stride" className="h-7 w-auto" />
+        <Link to="/" onClick={handleNav} className="flex items-center gap-2">
+          <Logo className="h-8 w-auto" />
         </Link>
       </div>
 
@@ -37,7 +47,7 @@ export default function Sidebar() {
           </svg>
           <input
             type="text"
-            placeholder="Buscar tareas...  ⌘K"
+            placeholder="Buscar tareas..."
             className="w-full pl-9 pr-3 py-2 text-sm bg-background border rounded-[6px] text-foreground placeholder-subtle focus:ring-1 focus:ring-ring focus:border-ring outline-none transition-shadow duration-150"
           />
         </div>
@@ -54,6 +64,7 @@ export default function Sidebar() {
                   <Link
                     key={item.path}
                     to={item.path}
+                    onClick={handleNav}
                     className={`flex items-center gap-3 px-2 py-2 rounded-[6px] text-sm font-medium transition-colors duration-150 ${
                       isActive
                         ? 'bg-foreground/10 text-foreground'
@@ -100,6 +111,23 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      <aside className="hidden md:flex fixed top-0 left-0 h-screen w-[256px] bg-surface-muted border-r flex-col z-50">
+        {sidebarContent}
+      </aside>
+
+      {open && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+          <aside className="absolute top-0 left-0 h-full w-[256px] bg-surface-muted border-r flex flex-col">
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

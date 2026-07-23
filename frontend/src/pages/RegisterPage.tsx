@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Logo from '../components/Logo';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -24,11 +25,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      <div className="flex-1 flex items-center justify-center px-8 lg:px-16">
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16">
         <div className="w-full max-w-sm">
           <div className="mb-10">
-            <img src="/stride-logo.png" alt="Stride" className="h-8 w-auto mb-6" />
+            <Logo className="h-8 w-auto mb-6" />
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">Crear cuenta</h1>
             <p className="text-sm text-foreground-muted mt-1">Regístrate para empezar a organizar tus tareas</p>
           </div>
@@ -66,7 +67,7 @@ export default function RegisterPage() {
 
       <div className="hidden lg:flex flex-1 bg-surface-muted border-l items-center justify-center px-8">
         <div className="max-w-xs text-center">
-          <img src="/stride-logo.png" alt="Stride" className="h-10 w-auto mx-auto mb-6 opacity-80" />
+          <Logo className="h-10 w-auto mx-auto mb-6 opacity-80" />
           <h2 className="text-lg font-semibold text-foreground mb-2">Empieza hoy</h2>
           <p className="text-sm text-foreground-muted leading-relaxed">
             Crea tu cuenta y comienza a gestionar tus proyectos con una herramienta simple y potente.

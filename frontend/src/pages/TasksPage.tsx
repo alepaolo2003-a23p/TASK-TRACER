@@ -75,6 +75,7 @@ export default function TasksPage() {
   const [filterPriority, setFilterPriority] = useState<Priority | ''>('');
   const [filterCategory, setFilterCategory] = useState('');
   const [calendarDate, setCalendarDate] = useState(new Date());
+  const [showFilters, setShowFilters] = useState(false);
   const { darkMode, toggleDarkMode } = useTheme();
 
   const sensors = useSensors(
@@ -163,11 +164,6 @@ export default function TasksPage() {
     await loadData();
   };
 
-  const handleStatusChange = async (task: Task, newStatus: TaskStatusType) => {
-    await taskService.updateStatus(task.id, newStatus);
-    await loadData();
-  };
-
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
       if (filterStatus && t.status !== filterStatus) return false;
@@ -197,14 +193,14 @@ export default function TasksPage() {
         tasksByDate.get(key)!.push(t);
       }
     });
-    return { cells, today, tasksByDate };
+    return { cells, today, tasksByDate, daysInMonth, startPad };
   }, [calendarDate, filteredTasks]);
 
   const renderKanban = () => (
     <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex flex-col gap-4 md:flex-row md:gap-4">
+      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
         {columns.map((col) => (
-          <div key={col.status} className="md:w-[calc(33.333%-12px)] md:min-w-0">
+          <div key={col.status} className="min-w-[280px] md:min-w-[320px] md:w-[calc(33.333%-16px)] snap-center flex-shrink-0">
             <KanbanColumn
               status={col.status}
               title={col.title}
@@ -230,8 +226,8 @@ export default function TasksPage() {
     </DndContext>
   );
 
-  const renderList = () => (
-    <div className="card overflow-hidden">
+  const renderListDesktop = () => (
+    <div className="card overflow-hidden hidden md:block">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-surface-muted">
@@ -302,8 +298,51 @@ export default function TasksPage() {
     </div>
   );
 
-  const renderCalendar = () => (
-    <div className="card p-4">
+  const renderListMobile = () => (
+    <div className="flex flex-col gap-2 md:hidden">
+      {filteredTasks.map((task) => (
+        <div key={task.id} className="card p-3">
+          <div className="flex items-start gap-2">
+            <div className="priority-dot mt-[5px]" style={{ backgroundColor: priorityColors[task.priority] }} />
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-medium text-foreground">{task.title}</h4>
+              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                <div className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColors[task.status] }} />
+                  <span className="text-xs text-foreground-muted">{statusLabels[task.status]}</span>
+                </div>
+                <span className={`${getPriorityClass(task.priority)} text-micro`}>
+                  {priorityLabels[task.priority]}
+                </span>
+                {task.categoryName && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-[6px] text-micro text-white font-medium" style={{ backgroundColor: task.categoryColor || '#A3A3A3' }}>
+                    #{task.categoryName}
+                  </span>
+                )}
+                {task.dueDate && (
+                  <span className="text-xs text-subtle">{new Date(task.dueDate).toLocaleDateString()}</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-3 mt-2 pt-2 border-t">
+            <button onClick={() => { setEditingTask(task); setShowForm(true); }} className="text-micro text-foreground-muted hover:text-foreground font-medium transition-colors">
+              Editar
+            </button>
+            <button onClick={() => handleDelete(task.id)} className="text-micro text-[#EF4444] hover:text-[#B91C1C] font-medium transition-colors">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      ))}
+      {filteredTasks.length === 0 && (
+        <p className="text-sm text-subtle text-center py-8">No hay tareas</p>
+      )}
+    </div>
+  );
+
+  const renderCalendarDesktop = () => (
+    <div className="card p-4 hidden md:block">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1))} className="p-1.5 rounded-md hover:bg-foreground/5 transition-colors">
@@ -337,9 +376,7 @@ export default function TasksPage() {
             calendarGrid.today.getDate() === day;
           return (
             <div key={dateStr} className={`bg-surface min-h-[90px] p-1.5 ${isToday ? 'ring-1 ring-inset ring-ring' : ''}`}>
-              <span className={`text-micro font-medium ${isToday ? 'text-foreground' : 'text-foreground-muted'}`}>
-                {day}
-              </span>
+              <span className={`text-micro font-medium ${isToday ? 'text-foreground' : 'text-foreground-muted'}`}>{day}</span>
               <div className="flex flex-col gap-0.5 mt-1">
                 {dayTasks.slice(0, 4).map((t) => (
                   <div
@@ -351,9 +388,65 @@ export default function TasksPage() {
                     <span className="text-[10px] text-foreground truncate">{t.title}</span>
                   </div>
                 ))}
-                {dayTasks.length > 4 && (
-                  <span className="text-[10px] text-subtle pl-1">+{dayTasks.length - 4} más</span>
-                )}
+                {dayTasks.length > 4 && <span className="text-[10px] text-subtle pl-1">+{dayTasks.length - 4} más</span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderCalendarMobile = () => (
+    <div className="flex flex-col gap-3 md:hidden">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1))} className="p-1.5 rounded-md hover:bg-foreground/5 transition-colors">
+            <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h3 className="text-sm font-semibold text-foreground">{MONTH_NAMES[calendarDate.getMonth()]} {calendarDate.getFullYear()}</h3>
+          <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1))} className="p-1.5 rounded-md hover:bg-foreground/5 transition-colors">
+            <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+        <button onClick={() => setCalendarDate(new Date())} className="text-micro text-foreground-muted hover:text-foreground font-medium transition-colors">
+          Hoy
+        </button>
+      </div>
+      <div className="flex flex-col gap-1">
+        {Array.from({ length: calendarGrid.daysInMonth }, (_, i) => i + 1).map((day) => {
+          const dateStr = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const dayTasks = calendarGrid.tasksByDate.get(dateStr) || [];
+          const isToday = calendarGrid.today.getFullYear() === calendarDate.getFullYear() &&
+            calendarGrid.today.getMonth() === calendarDate.getMonth() &&
+            calendarGrid.today.getDate() === day;
+          if (dayTasks.length === 0 && !isToday) return null;
+          return (
+            <div key={dateStr} className={`card p-3 ${isToday ? 'ring-1 ring-ring' : ''}`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className={`text-xs font-medium ${isToday ? 'text-foreground' : 'text-foreground-muted'}`}>
+                  {MONTH_NAMES[calendarDate.getMonth()].substring(0, 3)} {day}
+                </span>
+                {dayTasks.length > 0 && <span className="text-micro text-subtle">{dayTasks.length} tareas</span>}
+              </div>
+              <div className="flex flex-col gap-1">
+                {dayTasks.map((t) => (
+                  <div
+                    key={t.id}
+                    className="flex items-center gap-2 px-2 py-1 rounded-[4px] bg-foreground/5 cursor-pointer hover:bg-foreground/10 transition-colors"
+                    onClick={() => { setEditingTask(t); setShowForm(true); }}
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: priorityColors[t.priority] }} />
+                    <span className="text-xs text-foreground truncate">{t.title}</span>
+                    <span className={`${getPriorityClass(t.priority)} text-micro ml-auto flex-shrink-0`}>
+                      {priorityLabels[t.priority]}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           );
@@ -363,14 +456,14 @@ export default function TasksPage() {
   );
 
   return (
-    <div className="px-6 py-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="px-4 md:px-6 py-4 md:py-6 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between mb-4 md:mb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tareas</h1>
           <p className="text-sm text-foreground-muted mt-0.5">{filteredTasks.length} tareas</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={toggleDarkMode} className="p-2 rounded-md hover:bg-foreground/5 transition-colors" title="Cambiar tema">
+          <button onClick={toggleDarkMode} className="hidden md:flex p-2 rounded-md hover:bg-foreground/5 transition-colors" title="Cambiar tema">
             {darkMode ? (
               <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -381,14 +474,14 @@ export default function TasksPage() {
               </svg>
             )}
           </button>
-          <button onClick={() => { setEditingTask(null); setShowForm(true); }} className="btn-primary">
+          <button onClick={() => { setEditingTask(null); setShowForm(true); }} className="btn-primary text-sm whitespace-nowrap">
             + Nueva tarea
           </button>
         </div>
       </div>
 
-      <div className="flex items-center justify-between mb-6">
-        <div className="inline-flex items-center gap-0.5 p-0.5 bg-surface-muted border rounded-[8px]">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4 md:mb-6">
+        <div className="inline-flex items-center gap-0.5 p-0.5 bg-surface-muted border rounded-[8px] self-start">
           {(['kanban', 'lista', 'calendario'] as ViewMode[]).map((mode) => (
             <button
               key={mode}
@@ -403,7 +496,21 @@ export default function TasksPage() {
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-2">
+
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="md:hidden flex items-center gap-1.5 text-sm text-foreground-muted hover:text-foreground font-medium transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Filtros
+          {(filterStatus || filterPriority || filterCategory) && (
+            <span className="w-2 h-2 rounded-full bg-foreground" />
+          )}
+        </button>
+
+        <div className="hidden md:flex items-center gap-2">
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as TaskStatusType | '')} className="input w-auto text-sm">
             <option value="">Todos los estados</option>
             <option value="TODO">Por hacer</option>
@@ -425,9 +532,32 @@ export default function TasksPage() {
         </div>
       </div>
 
+      {showFilters && (
+        <div className="flex flex-col gap-2 mb-4 md:hidden">
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as TaskStatusType | '')} className="input text-sm">
+            <option value="">Todos los estados</option>
+            <option value="TODO">Por hacer</option>
+            <option value="IN_PROGRESS">En progreso</option>
+            <option value="DONE">Completado</option>
+          </select>
+          <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value as Priority | '')} className="input text-sm">
+            <option value="">Todas las prioridades</option>
+            <option value="HIGH">Alta</option>
+            <option value="MEDIUM">Media</option>
+            <option value="LOW">Baja</option>
+          </select>
+          <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="input text-sm">
+            <option value="">Todas las etiquetas</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="card p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl rounded-[12px]">
+        <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 p-0 md:p-4">
+          <div className="bg-surface w-full md:max-w-lg md:max-h-[90vh] md:rounded-[12px] md:shadow-xl md:p-5 p-5 rounded-t-[12px] md:rounded-b-[12px] max-h-[95vh] overflow-y-auto">
             <h2 className="text-base font-semibold text-foreground mb-5">{editingTask ? 'Editar tarea' : 'Nueva tarea'}</h2>
             <TaskForm task={editingTask} categories={categories} onSave={handleSave} onCancel={() => { setShowForm(false); setEditingTask(null); }} />
           </div>
@@ -435,8 +565,10 @@ export default function TasksPage() {
       )}
 
       {viewMode === 'kanban' && renderKanban()}
-      {viewMode === 'lista' && renderList()}
-      {viewMode === 'calendario' && renderCalendar()}
+      {viewMode === 'lista' && renderListDesktop()}
+      {viewMode === 'lista' && renderListMobile()}
+      {viewMode === 'calendario' && renderCalendarDesktop()}
+      {viewMode === 'calendario' && renderCalendarMobile()}
     </div>
   );
 }
