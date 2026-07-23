@@ -122,7 +122,7 @@ export default function Sidebar({ open, onClose }: Props) {
 
       {open && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+          <div className="fixed inset-0 bg-black/40" onClick={onClose} />
           <aside className="absolute top-0 left-0 h-full w-[256px] bg-surface-muted border-r flex flex-col">
             {sidebarContent}
           </aside>

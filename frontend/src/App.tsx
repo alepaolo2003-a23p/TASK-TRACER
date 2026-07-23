@@ -32,7 +32,7 @@ export default function App() {
     <div className="flex min-h-screen bg-background">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 md:ml-[256px] flex flex-col min-h-screen">
+      <div className="flex-1 md:pl-[256px] flex flex-col min-h-[100dvh]">
         <header className="md:hidden flex items-center justify-between px-4 h-14 border-b bg-background sticky top-0 z-40">
           <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 rounded-md hover:bg-foreground/5 transition-colors" aria-label="Abrir menú">
             <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
