@@ -3,6 +3,10 @@ import {
   DndContext,
   DragOverlay,
   closestCorners,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
   type DragStartEvent,
   type DragEndEvent,
 } from '@dnd-kit/core';
@@ -17,8 +21,8 @@ import TaskForm from '../components/TaskForm';
 
 const columns: { status: TaskStatus; title: string; color: string }[] = [
   { status: TaskStatus.TODO, title: 'To Do', color: '#6b7280' },
-  { status: TaskStatus.IN_PROGRESS, title: 'In Progress', color: '#f59e0b' },
-  { status: TaskStatus.DONE, title: 'Done', color: '#10b981' },
+  { status: TaskStatus.IN_PROGRESS, title: 'In Progress', color: '#7C5CFC' },
+  { status: TaskStatus.DONE, title: 'Done', color: '#3DD9C4' },
 ];
 
 export default function KanbanPage() {
@@ -27,6 +31,11 @@ export default function KanbanPage() {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
+  );
 
   const loadData = useCallback(async () => {
     const [taskData, catData] = await Promise.all([
@@ -90,41 +99,39 @@ export default function KanbanPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Kanban Board</h1>
-        <button
-          onClick={() => { setEditingTask(null); setShowForm(true); }}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium"
-        >
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-[#F2F2F5]">Kanban Board</h1>
+        <button onClick={() => { setEditingTask(null); setShowForm(true); }} className="btn-primary">
           + New Task
         </button>
       </div>
 
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold mb-4 dark:text-white">{editingTask ? 'Edit Task' : 'New Task'}</h2>
+          <div className="card p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-bold mb-4 dark:text-[#F2F2F5]">{editingTask ? 'Edit Task' : 'New Task'}</h2>
             <TaskForm task={editingTask} categories={categories} onSave={handleSave} onCancel={() => { setShowForm(false); setEditingTask(null); }} />
           </div>
         </div>
       )}
 
-      <DndContext collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="flex gap-6 overflow-x-auto pb-4">
+      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none [-webkit-overflow-scrolling:touch]">
           {columns.map((col) => (
-            <KanbanColumn
-              key={col.status}
-              status={col.status}
-              title={col.title}
-              color={col.color}
-              tasks={getTasksByStatus(col.status)}
-              onEdit={(task) => { setEditingTask(task); setShowForm(true); }}
-              onDelete={handleDelete}
-            />
+            <div key={col.status} className="min-w-[85vw] md:min-w-0 md:w-[calc(33.333%-12px)] snap-center">
+              <KanbanColumn
+                status={col.status}
+                title={col.title}
+                color={col.color}
+                tasks={getTasksByStatus(col.status)}
+                onEdit={(task) => { setEditingTask(task); setShowForm(true); }}
+                onDelete={handleDelete}
+              />
+            </div>
           ))}
         </div>
         <DragOverlay>
           {activeTask ? (
-            <div className="opacity-90">
+            <div className="opacity-90 rotate-3">
               <TaskCard task={activeTask} onEdit={() => {}} onDelete={() => {}} />
             </div>
           ) : null}

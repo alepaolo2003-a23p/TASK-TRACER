@@ -17,7 +17,7 @@ export default function App() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+    <div className="min-h-screen bg-[#F8F8FC] dark:bg-[#0F0F14] transition-colors duration-200">
       {isAuthenticated && <Navbar />}
       <main className={isAuthenticated ? 'pt-16' : ''}>
         <Routes>

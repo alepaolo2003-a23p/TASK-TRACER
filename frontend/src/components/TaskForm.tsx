@@ -62,45 +62,39 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium dark:text-gray-300 mb-1">Title *</label>
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required
-          className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" />
+        <label className="label">Title *</label>
+        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="input" />
       </div>
       <div>
-        <label className="block text-sm font-medium dark:text-gray-300 mb-1">Description</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3}
-          className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" />
+        <label className="label">Description</label>
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="input" />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium dark:text-gray-300 mb-1">Status</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value as TaskStatus)}
-            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+          <label className="label">Status</label>
+          <select value={status} onChange={(e) => setStatus(e.target.value as TaskStatus)} className="input">
             <option value="TODO">To Do</option>
             <option value="IN_PROGRESS">In Progress</option>
             <option value="DONE">Done</option>
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium dark:text-gray-300 mb-1">Priority</label>
-          <select value={priority} onChange={(e) => setPriority(e.target.value as Priority)}
-            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+          <label className="label">Priority</label>
+          <select value={priority} onChange={(e) => setPriority(e.target.value as Priority)} className="input">
             <option value="LOW">Low</option>
             <option value="MEDIUM">Medium</option>
             <option value="HIGH">High</option>
           </select>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium dark:text-gray-300 mb-1">Due Date</label>
-          <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" />
+          <label className="label">Due Date</label>
+          <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="input" />
         </div>
         <div>
-          <label className="block text-sm font-medium dark:text-gray-300 mb-1">Category</label>
-          <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+          <label className="label">Category</label>
+          <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="input">
             <option value="">None</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
@@ -108,15 +102,15 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
           </select>
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        <label className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={recurring} onChange={(e) => setRecurring(e.target.checked)}
-            className="rounded" />
-          <span className="text-sm dark:text-gray-300">Recurring</span>
+            className="rounded accent-[#7C5CFC]" />
+          <span className="text-sm text-gray-700 dark:text-[#9494A0]">Recurring</span>
         </label>
         {recurring && (
           <select value={recurrenceRule} onChange={(e) => setRecurrenceRule(e.target.value)}
-            className="px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm flex-1">
+            className="input flex-1">
             <option value="">Select rule</option>
             <option value="DAILY">Daily</option>
             <option value="WEEKLY">Weekly</option>
@@ -125,12 +119,10 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
         )}
       </div>
       <div className="flex gap-3 justify-end pt-2">
-        <button type="button" onClick={onCancel}
-          className="px-4 py-2 border rounded-lg text-sm dark:text-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <button type="button" onClick={onCancel} className="btn-ghost">
           Cancel
         </button>
-        <button type="submit" disabled={loading}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 text-sm font-medium">
+        <button type="submit" disabled={loading} className="btn-primary">
           {loading ? 'Saving...' : task ? 'Update' : 'Create'}
         </button>
       </div>

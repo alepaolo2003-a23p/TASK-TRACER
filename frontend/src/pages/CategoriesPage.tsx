@@ -5,7 +5,7 @@ import type { Category } from '../types';
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [name, setName] = useState('');
-  const [color, setColor] = useState('#6366f1');
+  const [color, setColor] = useState('#7C5CFC');
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const loadCategories = useCallback(async () => {
@@ -23,7 +23,7 @@ export default function CategoriesPage() {
       await categoryService.create({ name, color });
     }
     setName('');
-    setColor('#6366f1');
+    setColor('#7C5CFC');
     setEditingId(null);
     await loadCategories();
   };
@@ -41,30 +41,29 @@ export default function CategoriesPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Categories</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-[#F2F2F5] mb-6">Categories</h1>
 
-      <form onSubmit={handleSubmit} className="flex gap-3 mb-6">
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-6">
         <input
           type="text"
           placeholder="Category name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="flex-1 px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
+          className="input flex-1"
         />
         <input
           type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
-          className="w-10 h-10 rounded cursor-pointer"
+          className="w-12 h-10 rounded-lg cursor-pointer border dark:border-gray-700"
         />
-        <button type="submit"
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium">
+        <button type="submit" className="btn-primary min-h-[44px]">
           {editingId ? 'Update' : 'Add'}
         </button>
         {editingId && (
-          <button type="button" onClick={() => { setName(''); setColor('#6366f1'); setEditingId(null); }}
-            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-sm">
+          <button type="button" onClick={() => { setName(''); setColor('#7C5CFC'); setEditingId(null); }}
+            className="btn-ghost min-h-[44px]">
             Cancel
           </button>
         )}
@@ -72,21 +71,21 @@ export default function CategoriesPage() {
 
       <div className="space-y-2">
         {categories.map((cat) => (
-          <div key={cat.id} className="flex items-center justify-between bg-white dark:bg-gray-800 p-3 rounded-lg border dark:border-gray-700">
+          <div key={cat.id} className="card-hover flex items-center justify-between p-3">
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 rounded-full" style={{ backgroundColor: cat.color }} />
-              <span className="text-gray-900 dark:text-white font-medium">{cat.name}</span>
+              <span className="text-gray-900 dark:text-[#F2F2F5] font-medium text-sm">{cat.name}</span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button onClick={() => handleEdit(cat)}
-                className="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400">Edit</button>
+                className="text-xs font-medium text-[#7C5CFC] hover:text-[#6a4de6]">Edit</button>
               <button onClick={() => handleDelete(cat.id)}
-                className="text-xs text-red-600 hover:text-red-800 dark:text-red-400">Delete</button>
+                className="text-xs font-medium text-[#FF6B6B] hover:text-[#e05555]">Delete</button>
             </div>
           </div>
         ))}
         {categories.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-8">No categories yet. Create one above.</p>
+          <p className="text-sm text-[#9494A0] text-center py-8">No categories yet. Create one above.</p>
         )}
       </div>
     </div>

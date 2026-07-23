@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+  body {
+    @apply antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-[#1A1A22] rounded-card border shadow-sm dark:shadow-none dark:border-gray-800;
+  }
+  .card-hover {
+    @apply card transition-all duration-200 hover:shadow-md dark:hover:border-gray-600;
+  }
+  .btn-primary {
+    @apply px-4 py-2 bg-[#7C5CFC] text-white rounded-lg hover:bg-[#6a4de6] disabled:opacity-50 text-sm font-medium transition-colors duration-150;
+  }
+  .btn-ghost {
+    @apply px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-150 text-gray-600 hover:text-gray-900 dark:text-[#9494A0] dark:hover:text-[#F2F2F5] hover:bg-gray-100 dark:hover:bg-white/5;
+  }
+  .input {
+    @apply w-full px-3 py-2 border rounded-lg bg-white dark:bg-[#1A1A22] dark:text-[#F2F2F5] text-sm focus:ring-2 focus:ring-[#7C5CFC] focus:border-[#7C5CFC] outline-none transition-shadow duration-150;
+  }
+  .label {
+    @apply block text-sm font-medium text-gray-700 dark:text-[#9494A0] mb-1;
+  }
+}
