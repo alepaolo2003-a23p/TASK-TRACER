@@ -94,7 +94,7 @@ export default function KanbanColumn({
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           <div className="flex flex-col gap-2 p-3 min-h-[60px]">
             {visibleTasks.map((task) => (
-              <TaskCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} />
+              <TaskCard key={task.id} task={task} onEdit={onEdit} />
             ))}
             {tasks.length === 0 && (
               <p className="text-xs text-subtle text-center py-6">Suelta tareas aquí</p>

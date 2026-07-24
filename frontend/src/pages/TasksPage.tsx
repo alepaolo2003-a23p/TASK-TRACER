@@ -239,7 +239,7 @@ export default function TasksPage() {
       <DragOverlay>
         {activeTask ? (
           <div className="opacity-90 rotate-3">
-            <TaskCard task={activeTask} onEdit={() => {}} onDelete={() => {}} />
+            <TaskCard task={activeTask} onEdit={() => {}} />
           </div>
         ) : null}
       </DragOverlay>
