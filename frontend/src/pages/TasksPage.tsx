@@ -71,6 +71,7 @@ export default function TasksPage() {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [formDefaultStatus, setFormDefaultStatus] = useState<TaskStatus>('TODO' as TaskStatus);
   const [collapsed, setCollapsed] = useState<Set<TaskStatusType>>(new Set());
   const [showAll, setShowAll] = useState<Set<TaskStatusType>>(new Set());
   const [search, setSearch] = useState('');
@@ -215,9 +216,9 @@ export default function TasksPage() {
 
   const renderKanban = () => (
     <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
+      <div className="flex flex-col md:flex-row gap-4 pb-4 md:overflow-x-auto md:snap-x md:snap-mandatory md:[-webkit-overflow-scrolling:touch] lg:overflow-x-visible lg:snap-none">
         {columns.map((col) => (
-          <div key={col.status} className="min-w-[280px] md:min-w-[320px] md:w-[calc(33.333%-16px)] snap-center flex-shrink-0">
+          <div key={col.status} className="w-full md:min-w-[280px] md:snap-center md:flex-shrink-0 lg:min-w-0 lg:flex-1">
             <KanbanColumn
               status={col.status}
               title={col.title}
@@ -229,10 +230,12 @@ export default function TasksPage() {
               onToggleShowAll={() => toggleShowAll(col.status)}
               onEdit={(task) => { setEditingTask(task); setShowForm(true); }}
               onDelete={handleDelete}
+              onAddTask={() => { setFormDefaultStatus(col.status); setEditingTask(null); setShowForm(true); }}
             />
           </div>
         ))}
       </div>
+      <p className="text-micro text-subtle text-center pb-4 hidden md:block">Mantén pulsada una tarjeta para arrastrarla entre columnas</p>
       <DragOverlay>
         {activeTask ? (
           <div className="opacity-90 rotate-3">
@@ -578,7 +581,7 @@ export default function TasksPage() {
         <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 p-0 md:p-4">
           <div className="bg-surface w-full md:max-w-lg md:max-h-[90vh] md:rounded-[12px] md:shadow-xl md:p-5 p-5 rounded-t-[12px] md:rounded-b-[12px] max-h-[95vh] overflow-y-auto">
             <h2 className="text-base font-semibold text-foreground mb-5">{editingTask ? 'Editar tarea' : 'Nueva tarea'}</h2>
-            <TaskForm task={editingTask} categories={categories} onSave={handleSave} onCancel={() => { setShowForm(false); setEditingTask(null); }} />
+            <TaskForm task={editingTask} categories={categories} onSave={handleSave} defaultStatus={formDefaultStatus} onCancel={() => { setShowForm(false); setEditingTask(null); setFormDefaultStatus('TODO' as TaskStatus); }} />
           </div>
         </div>
       )}

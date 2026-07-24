@@ -17,6 +17,7 @@ interface Props {
   onToggleShowAll: () => void;
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
+  onAddTask: () => void;
 }
 
 export default function KanbanColumn({
@@ -30,8 +31,10 @@ export default function KanbanColumn({
   onToggleShowAll,
   onEdit,
   onDelete,
+  onAddTask,
 }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const hasMany = tasks.length > VISIBLE_COUNT;
   const visibleTasks = hasMany && !showAll ? tasks.slice(0, VISIBLE_COUNT) : tasks;
@@ -44,25 +47,44 @@ export default function KanbanColumn({
       }`}
     >
       <div className="flex items-center gap-2 px-3 py-3 border-b">
-        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-        <h3 className="text-xs font-medium text-foreground uppercase tracking-wider">{title}</h3>
-        <span className="text-micro text-subtle ml-auto">{tasks.length}</span>
-        <button
-          onClick={onToggleCollapsed}
-          className="p-0.5 rounded hover:bg-foreground/5 transition-colors"
-          aria-label={collapsed ? 'Expandir' : 'Colapsar'}
-        >
-          <svg
-            className={`w-3.5 h-3.5 text-subtle transition-transform duration-200 ${
-              collapsed ? '-rotate-90' : 'rotate-0'
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        <span className="text-micro w-5 h-5 rounded-full bg-foreground/10 flex items-center justify-center text-foreground-muted font-medium">{tasks.length}</span>
+        <div className="ml-auto flex items-center gap-0.5">
+          <button
+            onClick={onAddTask}
+            className="p-1 rounded-md hover:bg-foreground/5 transition-colors"
+            aria-label="Añadir tarea"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
+            <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-1 rounded-md hover:bg-foreground/5 transition-colors"
+              aria-label="Menú de columna"
+            >
+              <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01" />
+              </svg>
+            </button>
+            {menuOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+                <div className="absolute right-0 top-full mt-1 w-40 bg-surface border rounded-[8px] shadow-lg z-20 py-1">
+                  <button
+                    onClick={() => { onToggleCollapsed(); setMenuOpen(false); }}
+                    className="w-full text-left px-3 py-1.5 text-sm text-foreground hover:bg-foreground/5 transition-colors"
+                  >
+                    {collapsed ? 'Expandir' : 'Colapsar'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${
@@ -95,6 +117,12 @@ export default function KanbanColumn({
             )}
           </div>
         </SortableContext>
+        <button
+          onClick={onAddTask}
+          className="w-full text-sm text-foreground-muted hover:text-foreground py-2.5 px-3 border-t border-dashed transition-colors"
+        >
+          + Añadir tarjeta
+        </button>
       </div>
     </div>
   );

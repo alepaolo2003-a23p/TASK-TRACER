@@ -8,6 +8,7 @@ interface Props {
   categories: Category[];
   onSave: () => void;
   onCancel: () => void;
+  defaultStatus?: TaskStatus;
 }
 
 const statusLabels: Record<string, string> = {
@@ -23,10 +24,10 @@ const priorityLabels: Record<string, string> = {
   HIGH: 'Alta',
 };
 
-export default function TaskForm({ task, categories, onSave, onCancel }: Props) {
+export default function TaskForm({ task, categories, onSave, onCancel, defaultStatus }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<TaskStatus>(TaskStatus.TODO);
+  const [status, setStatus] = useState<TaskStatus>(defaultStatus || TaskStatus.TODO);
   const [priority, setPriority] = useState<Priority>(Priority.MEDIUM);
   const [dueDate, setDueDate] = useState('');
   const [categoryId, setCategoryId] = useState('');

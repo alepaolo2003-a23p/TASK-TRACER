@@ -30,6 +30,7 @@ export default {
         status: {
           todo: '#A3A3A3',
           progress: '#3B82F6',
+          review: '#8B5CF6',
           done: '#10B981',
         },
       },
