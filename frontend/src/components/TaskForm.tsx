@@ -13,6 +13,7 @@ interface Props {
 const statusLabels: Record<string, string> = {
   TODO: 'Por hacer',
   IN_PROGRESS: 'En progreso',
+  IN_REVIEW: 'En revisión',
   DONE: 'Completado',
 };
 
@@ -103,9 +104,10 @@ export default function TaskForm({ task, categories, onSave, onCancel }: Props) 
       <div className="grid grid-cols-3 gap-3">
         <div>
           <label className="label">Estado</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value as TaskStatus)} className="input text-sm">
+            <select value={status} onChange={(e) => setStatus(e.target.value as TaskStatus)} className="input text-sm">
             <option value="TODO">{statusLabels.TODO}</option>
             <option value="IN_PROGRESS">{statusLabels.IN_PROGRESS}</option>
+            <option value="IN_REVIEW">{statusLabels.IN_REVIEW}</option>
             <option value="DONE">{statusLabels.DONE}</option>
           </select>
         </div>

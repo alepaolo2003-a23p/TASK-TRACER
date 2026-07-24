@@ -25,6 +25,7 @@ type ViewMode = 'kanban' | 'lista' | 'calendario';
 const statusLabels: Record<string, string> = {
   TODO: 'Por hacer',
   IN_PROGRESS: 'En progreso',
+  IN_REVIEW: 'En revisión',
   DONE: 'Completado',
 };
 
@@ -37,6 +38,7 @@ const priorityLabels: Record<string, string> = {
 const statusColors: Record<string, string> = {
   TODO: '#A3A3A3',
   IN_PROGRESS: '#3B82F6',
+  IN_REVIEW: '#8B5CF6',
   DONE: '#10B981',
 };
 
@@ -49,6 +51,7 @@ const priorityColors: Record<string, string> = {
 const columns: { status: TaskStatus; title: string; color: string }[] = [
   { status: TaskStatus.TODO, title: statusLabels.TODO, color: '#A3A3A3' },
   { status: TaskStatus.IN_PROGRESS, title: statusLabels.IN_PROGRESS, color: '#3B82F6' },
+  { status: TaskStatus.IN_REVIEW, title: statusLabels.IN_REVIEW, color: '#8B5CF6' },
   { status: TaskStatus.DONE, title: statusLabels.DONE, color: '#10B981' },
 ];
 
@@ -529,6 +532,7 @@ export default function TasksPage() {
             <option value="">Todos los estados</option>
             <option value="TODO">Por hacer</option>
             <option value="IN_PROGRESS">En progreso</option>
+            <option value="IN_REVIEW">En revisión</option>
             <option value="DONE">Completado</option>
           </select>
           <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value as Priority | '')} className="input w-auto text-sm">
@@ -552,6 +556,7 @@ export default function TasksPage() {
             <option value="">Todos los estados</option>
             <option value="TODO">Por hacer</option>
             <option value="IN_PROGRESS">En progreso</option>
+            <option value="IN_REVIEW">En revisión</option>
             <option value="DONE">Completado</option>
           </select>
           <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value as Priority | '')} className="input text-sm">
