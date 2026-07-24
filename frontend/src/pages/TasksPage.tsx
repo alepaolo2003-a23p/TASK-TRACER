@@ -19,6 +19,7 @@ import KanbanColumn from '../components/KanbanColumn';
 import TaskCard from '../components/TaskCard';
 import TaskForm from '../components/TaskForm';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 
 type ViewMode = 'kanban' | 'lista' | 'calendario';
 
@@ -80,6 +81,9 @@ export default function TasksPage() {
   const [filterCategory, setFilterCategory] = useState('');
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [showFilters, setShowFilters] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [filterTab, setFilterTab] = useState<'all' | 'mine' | 'withDate' | 'etiquetas'>('all');
+  const { user } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
 
   const sensors = useSensors(
@@ -188,9 +192,11 @@ export default function TasksPage() {
       if (filterPriority && t.priority !== filterPriority) return false;
       if (filterCategory && t.categoryId !== filterCategory) return false;
       if (search && !t.title.toLowerCase().includes(search.toLowerCase()) && !t.description?.toLowerCase().includes(search.toLowerCase())) return false;
+      if (filterTab === 'withDate' && !t.dueDate) return false;
+      if (filterTab === 'etiquetas' && !t.categoryId) return false;
       return true;
     });
-  }, [tasks, filterStatus, filterPriority, filterCategory, search]);
+  }, [tasks, filterStatus, filterPriority, filterCategory, search, filterTab]);
 
   const calendarGrid = useMemo(() => {
     const year = calendarDate.getFullYear();
@@ -477,12 +483,17 @@ export default function TasksPage() {
 
   return (
     <div className="px-4 md:px-6 py-4 md:py-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-4 md:mb-6">
+      <div className="flex items-center justify-between mb-1">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tareas</h1>
-          <p className="text-sm text-foreground-muted mt-0.5">{filteredTasks.length} tareas</p>
+          <p className="text-micro text-foreground-muted uppercase tracking-wider mb-0.5">TAREAS</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Mis tareas</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2.5">
+          <button onClick={() => setShowSearch(!showSearch)} className="p-2 rounded-md hover:bg-foreground/5 transition-colors" title="Buscar">
+            <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
           <button onClick={toggleDarkMode} className="hidden md:flex p-2 rounded-md hover:bg-foreground/5 transition-colors" title="Cambiar tema">
             {darkMode ? (
               <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -494,10 +505,52 @@ export default function TasksPage() {
               </svg>
             )}
           </button>
-          <button onClick={() => { setEditingTask(null); setShowForm(true); }} className="btn-primary text-sm whitespace-nowrap">
+          <button className="hidden md:flex p-2 rounded-md hover:bg-foreground/5 transition-colors" title="Notificaciones">
+            <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </button>
+          <button onClick={() => { setEditingTask(null); setFormDefaultStatus('TODO' as TaskStatus); setShowForm(true); }} className="btn-primary text-sm whitespace-nowrap">
             + Nueva tarea
           </button>
+          <div className="hidden md:flex items-center -space-x-1.5 ml-1">
+            <div className="w-7 h-7 rounded-full bg-foreground/10 border-2 border-background flex items-center justify-center text-[10px] font-semibold text-foreground-muted">
+              {user?.username?.charAt(0).toUpperCase() || '?'}
+            </div>
+          </div>
         </div>
+      </div>
+
+      {showSearch && (
+        <div className="mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar tareas..."
+            className="input text-sm"
+            autoFocus
+          />
+        </div>
+      )}
+
+      <div className="flex items-center gap-1 mb-4 overflow-x-auto">
+        <svg className="w-4 h-4 text-foreground-muted flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+        {(['all', 'mine', 'withDate', 'etiquetas'] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setFilterTab(tab)}
+            className={`px-3 py-1.5 rounded-[6px] text-sm font-medium whitespace-nowrap transition-colors ${
+              filterTab === tab
+                ? 'bg-foreground/10 text-foreground'
+                : 'text-foreground-muted hover:text-foreground hover:bg-foreground/5'
+            }`}
+          >
+            {tab === 'all' ? 'Todos' : tab === 'mine' ? 'Mis tareas' : tab === 'withDate' ? 'Con fecha' : 'Etiquetas'}
+          </button>
+        ))}
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4 md:mb-6">
@@ -516,19 +569,6 @@ export default function TasksPage() {
             </button>
           ))}
         </div>
-
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="md:hidden flex items-center gap-1.5 text-sm text-foreground-muted hover:text-foreground font-medium transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          Filtros
-          {(filterStatus || filterPriority || filterCategory) && (
-            <span className="w-2 h-2 rounded-full bg-foreground" />
-          )}
-        </button>
 
         <div className="hidden md:flex items-center gap-2">
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as TaskStatusType | '')} className="input w-auto text-sm">
@@ -551,6 +591,18 @@ export default function TasksPage() {
             ))}
           </select>
         </div>
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="md:hidden flex items-center gap-1.5 text-sm text-foreground-muted hover:text-foreground font-medium transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Filtros
+          {(filterStatus || filterPriority || filterCategory) && (
+            <span className="w-2 h-2 rounded-full bg-foreground" />
+          )}
+        </button>
       </div>
 
       {showFilters && (
